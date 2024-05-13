@@ -1,44 +1,23 @@
 package com.grswebservices.employees;
 
-import java.text.NumberFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Analyst extends Employee {
-        private int projectCount = 0;
+public class Analyst extends Employee implements IEmployee, Apple {
+    private int projectCount = 0;
 
-        private final String analystRegex = "\\w+=(?<projectCount>\\w+)";
-        private final Pattern analystPat = Pattern.compile(analystRegex);
-        private final String peopleRegex = "(?<lastName>\\w+),\\s*(?<firstName>\\w+),\\s*(?<dob>\\d{1,2}/\\d{1,2}/\\d{4}),\\s*(?<role>\\w+)(?:,\\s*\\{(?<details>.*)\\})?\\n";
-        private final Pattern peoplePat = Pattern.compile(peopleRegex);
-        private final DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-        private final NumberFormat moneyFormat = NumberFormat.getCurrencyInstance();
+    private final String analystRegex = "\\w+=(?<projectCount>\\w+)";
+    private final Pattern analystPat = Pattern.compile(analystRegex);
 
-        public Analyst(String personText) {
-            Matcher peopleMat = peoplePat.matcher(personText);
-            if (peopleMat.find()) {
-                this.lastName = peopleMat.group("lastName");
-                this.firstName = peopleMat.group("firstName");
-                this.dob = LocalDate.from(dtFormatter.parse(peopleMat.group("dob")));
-                Matcher analystMat = analystPat.matcher(peopleMat.group("details"));
-                if (analystMat.find()) {
-                    this.projectCount = Integer.parseInt(analystMat.group("projectCount"));
-                }
-            }
+    public Analyst(String personText) {
+    super(personText);
+        Matcher analystMat = analystPat.matcher(peopleMat.group("details"));
+        if (analystMat.find()) {
+            this.projectCount = Integer.parseInt(analystMat.group("projectCount"));
         }
+    }
 
-        public int getSalary() {
-            return 2500 + projectCount * 2;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%s, %s: %s", lastName, firstName, moneyFormat.format(getSalary()));
-
-        }
+    public int getSalary() {
+        return 2500 + projectCount * 2;
+    }
 }
-
-// CLASS HIERARCHIES
-//

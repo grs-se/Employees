@@ -42,3 +42,6 @@
 - But to meet us in the middle the creators of Java did allow multiple interfaces.
 - Classes can only extend one class but can implement multiple interfaces.
 
+### Dealing with the Null Case
+- everytime we add a conditional block in it increases "Cyclomatic complexity" (is a software metric used to indicate the complexity of a program).
+- New hotness in Java: better to return an optional rather than a null

@@ -38,9 +38,13 @@ public class Main {
                 case "Analyst" -> new Analyst(peopleMat.group());
                 case "CEO" -> new CEO(peopleMat.group());
                 default -> null;
+                // Employee class already implements by default a getSalary method that returns 0
+                // default -> new Employee(peopleMat.group());
             };
-            System.out.println(employee.toString());
-            totalSalaries+= employee.getSalary();
+            if (employee != null) {
+                System.out.println(employee.toString());
+                totalSalaries+= employee.getSalary();
+            }
         }
         NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
         System.out.printf("The total payout should be %s%n", currencyInstance.format(totalSalaries));

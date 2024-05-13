@@ -6,10 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CEO implements Employee {
-    private String lastName;
-    private String firstName;
-    private LocalDate dob;
+public class CEO extends Employee {
     private int avgStockPrice = 0;
 
     private final String ceoRegex = "\\w+=(?<avgStockPrice>\\w+)";

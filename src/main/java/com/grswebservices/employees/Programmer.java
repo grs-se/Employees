@@ -19,8 +19,7 @@ public class Programmer {
     private final String progRegex = "\\w+=(?<locpd>\\w+),\\w+=(?<yoe>\\w),\\w+=(?<iq>\\w)";
     private final Pattern progPat = Pattern.compile(progRegex);
     private final NumberFormat moneyFormat = NumberFormat.getCurrencyInstance();
-
-    DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    private final DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
 
     public Programmer(String personText) {
         Matcher peopleMat = peoplePat.matcher(personText);

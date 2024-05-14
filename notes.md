@@ -29,6 +29,9 @@
 - in order to benefit from that all sub-classes need to call super(). When doing hierarchical coding have to remember to call super()  
 - Easy to forget to call super() (Java should make it automatically)
 
+### Super-Class
+- used to pull up any potentially duplicated code into one central place in the class hierarchy
+
 ### Compare and Contrast Interface approach vs SuperClass or Hierarchy approach
 | Interface                                                                                                                                      | SuperClass or Hierarchy                                                                                                                  |
 | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
@@ -45,3 +48,30 @@
 ### Dealing with the Null Case
 - everytime we add a conditional block in it increases "Cyclomatic complexity" (is a software metric used to indicate the complexity of a program).
 - New hotness in Java: better to return an optional rather than a null
+                  
+## Abstract Classes
+- when we implement an interface on a class we are forced to make sure that we have an implementation of the methods on that interface
+- when we implement that method we (or IDE) can flag it with an override annotation 
+- this won't work if Employee class is abstract, as abstract classes are not meant to be instances of
+- meant only to serve as a super class for other classes, but not meant to create standalone object instances on its own
+- Error: 'Employee is abstract cannot be instantiated';
+- Good for: if i have a method that I want to make use of in the superclass for example but I don't want to implement it in the superclass, I want to make sure that sub class provide an implementation of that method
+- i first must declare that superclass as abstract, and secondly declare the method as abstract too, now the mehtod cannot have an implementation.e
+- looks like a method defined on an interface - like a hybrid of a regular superclass and an interface together.
+- flag this method so that subclasses of this employee class must implement this method in order for the class hierarchy to be valid.
+- can't accidentally forget to implement this, because whenever a new programmer comes along someone they are forced to implement  the getSalary method -
+- "template method pattern" - design pattern
+
+### Interface vs Abstract vs Concrete SuperClass
+#### Interface
+- multiple classes that implements one or more methods that implement slightly differently
+- don't share data or implementation but do share some general characteristic
+- interface can tie them all together so that cabe interfaced by client code (Main class)
+- refer to all these classes via the interface
+
+#### SuperClass
+- two or more classes that share some of the same data and or some of the implementation 
+
+#### Abstract Class
+- v similar to superclass - but don't want to permit anyone to instantiate the abstract class itself
+- want to force some classes to implement certain methods

@@ -39,6 +39,7 @@ public class Main {
                 case "CEO" -> new CEO(peopleMat.group());
                 default -> null;
                 // Employee class already implements by default a getSalary method that returns 0
+                // this won't work if Employee class is abstract, as abstract classes are not meant to be instances of
                 // default -> new Employee(peopleMat.group());
             };
             if (employee != null) {

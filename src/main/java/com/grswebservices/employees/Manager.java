@@ -22,4 +22,5 @@ public class Manager extends Employee implements IEmployee, Apple{
     public int getSalary() {
         return 3500 + orgSize * directReports;
     }
+
 }

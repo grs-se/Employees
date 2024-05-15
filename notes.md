@@ -81,4 +81,22 @@
 - Number.getCurrencyInstance() = getCurrencyInstance = a factory method (public static final), NumberFormat is an abstract class.
 - static members cannot directly interact with non-static members, because static members exist without an instance of the class being created, but these non-static members can only exist when an isntance of the class is created
 - so it's like the static method exists before, during, and after the creation of any class instances so how can this static method refer to a field which itself will only exist when an isntance o fthis class is created
-- the problem is that the mathcer we need to use in the constructor can only be created at the time when we're rnning the constructor, and tha'ts a slightly differnet timing to when we are creating this EMployee
+- the problem is that the mathcer we need to use in the constructor can only be created at the time when we're rnning the constructor, and tha'ts a slightly differnet timing to when we are creating this EMployee 
+- want to force everyone to only use this factory method then make constructors protected
+- 
+### Nested Classes
+```java
+// NESTED CLASS
+// minimal - only implementing getSalary method
+// private because no external code needed to instantiate it
+// static because of way compiler handles nested classes - highly recommended
+// inherited no arg default constructor is called
+// final because we prevent any other class from extending it
+// read 'Effective Java' by Joshua Bloch
+private static final class DummyEmployee extends Employee {
+    @Override
+    public int getSalary() {
+        return 0;
+    }
+}
+ ```

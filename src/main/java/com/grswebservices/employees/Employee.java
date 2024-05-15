@@ -16,7 +16,15 @@ public abstract class Employee {
     protected String firstName;
     protected LocalDate dob;
 
-    public Employee(String personText) {
+    // can be called by subclasses but not outside the class hierarchy
+    protected Employee() {
+        peopleMat = null;
+        lastName = "N/A";
+        firstName = "N/A";
+        dob = null;
+    }
+
+    protected Employee(String personText) {
         // refer to full qualified class name if field is static
         peopleMat = Employee.PEOPLE_PAT.matcher(personText);
         if (peopleMat.find()) {
@@ -27,6 +35,7 @@ public abstract class Employee {
     }
 
     // employeeText = "Flinstone, Wilma, 3/3/1910, Analyst, {projectCount=3}"
+    // want to force everyone to only use this factory method then make constructors protected
     public static Employee createEmployee(String employeeText) {
         Matcher peopleMat = Employee.PEOPLE_PAT.matcher(employeeText);
         if (peopleMat.find()) {
@@ -35,13 +44,10 @@ public abstract class Employee {
                 case "Manager" -> new Manager(employeeText);
                 case "Analyst" -> new Analyst(employeeText);
                 case "CEO" -> new CEO(employeeText);
-                default -> null;
-                // Employee class already implements by default a getSalary method that returns 0
-                // this won't work if Employee class is abstract, as abstract classes are not meant to be instances of
-                // default -> new Employee(peopleMat.group());
+                default -> new DummyEmployee();
             };
         } else {
-            return null;
+            return new DummyEmployee();
         }
     }
 
@@ -55,5 +61,19 @@ public abstract class Employee {
     @Override
     public String toString() {
         return String.format("%s, %s: %s - %s", lastName, firstName, moneyFormat.format(getSalary()), moneyFormat.format(getBonus()));
+    }
+
+    // NESTED CLASS
+    // minimal - only implementing getSalary method
+    // private because no external code needed to instantiate it
+    // static because of way compiler handles nested classes - highly recommended
+    // inherited no arg default constructor is called
+    // final because we prevent any other class from extending it
+    // read 'Effective Java' by Joshua Bloch
+    private static final class DummyEmployee extends Employee {
+        @Override
+        public int getSalary() {
+            return 0;
+        }
     }
 }

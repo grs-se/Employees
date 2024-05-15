@@ -28,7 +28,7 @@ public class Main {
         Matcher peopleMat = Employee.PEOPLE_PAT.matcher(peopleText);
 
         int totalSalaries = 0;
-        Employee employee = null;
+        IEmployee employee = null;
         while (peopleMat.find()) {
             employee = Employee.createEmployee(peopleMat.group());
             System.out.println(employee.toString());
@@ -38,11 +38,14 @@ public class Main {
         System.out.printf("The total payout should be %s%n", currencyInstance.format(totalSalaries));
 
         // RECORD VS CLASS
+        /*
         WeirdoRecord larry = new WeirdoRecord("David", "Larry", LocalDate.of(1951, 1, 1));
         WeirdoClass larry2 = new WeirdoClass("David", "Larry", LocalDate.of(1951, 1, 1));
 
         WeirdoRecord jake = new WeirdoRecord("Snake", "Jake");
         jake.sayHello();
+        */
+
     }
 }
 

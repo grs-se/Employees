@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class Employee {
+public abstract class Employee implements IEmployee {
     protected final DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     protected final NumberFormat moneyFormat = NumberFormat.getCurrencyInstance();
     private static final String PEOPLE_REGEX = "(?<lastName>\\w+),\\s*(?<firstName>\\w+),\\s*(?<dob>\\d{1,2}/\\d{1,2}/\\d{4}),\\s*(?<role>\\w+)(?:,\\s*\\{(?<details>.*)\\})?\\n";
@@ -36,7 +36,7 @@ public abstract class Employee {
 
     // employeeText = "Flinstone, Wilma, 3/3/1910, Analyst, {projectCount=3}"
     // want to force everyone to only use this factory method then make constructors protected
-    public static Employee createEmployee(String employeeText) {
+    public static IEmployee createEmployee(String employeeText) {
         Matcher peopleMat = Employee.PEOPLE_PAT.matcher(employeeText);
         if (peopleMat.find()) {
             return switch (peopleMat.group("role")) {
@@ -44,6 +44,10 @@ public abstract class Employee {
                 case "Manager" -> new Manager(employeeText);
                 case "Analyst" -> new Analyst(employeeText);
                 case "CEO" -> new CEO(employeeText);
+                // Lambda
+                default -> () -> 0;
+
+                /*
                 // Anonymous class
                 default -> new Employee() {
                     @Override
@@ -51,10 +55,13 @@ public abstract class Employee {
                         return 0;
                     }
                 };
+                */
+
                 // default -> new DummyEmployee();
             };
         } else {
             return new DummyEmployee();
+            // default -> () -> 5;
         }
     }
 
@@ -70,13 +77,6 @@ public abstract class Employee {
         return String.format("%s, %s: %s - %s", lastName, firstName, moneyFormat.format(getSalary()), moneyFormat.format(getBonus()));
     }
 
-    // NESTED CLASS
-    // minimal - only implementing getSalary method
-    // private because no external code needed to instantiate it
-    // static because of way compiler handles nested classes - highly recommended
-    // inherited no arg default constructor is called
-    // final because we prevent any other class from extending it
-    // read 'Effective Java' by Joshua Bloch
     // STATIC NESTED CLASS
     private static final class DummyEmployee extends Employee {
         @Override

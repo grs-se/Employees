@@ -181,3 +181,14 @@ jake.sayHello();
 - can be nested
 - maybe be cautious making all models records.
 - might not be a lot of teams that even know about records because they're new as of 2021.
+
+### Lambda Expressions
+- completely different paradigm to OOP - a concept popularised by languages that follow a functional paradigm
+- Objects are the main currency of OOP - in functional programming functions are
+- In Java prior 8 methods could not live on their own outside of a class
+- With inclusion of Lambdas we now have the ability to do this and that in turn  allows our code to get much more concise
+- To keep it easy Java is expecting that we're referign to an interface with only 1 method on it with the same signature as the lambda expression, 
+- so we don't have to create all the boilerplate - new class, etc etc. 
+- as minimal as can be.
+- "magical"
+- lamdbas work so perfectly in line with all the other concepts that have been leading up to here, with nested classes, inner classes, anonoymous classes, and the most logical conclusion of all of that in many cases is the Lambda - we just didnt have access to those before Java 8. 

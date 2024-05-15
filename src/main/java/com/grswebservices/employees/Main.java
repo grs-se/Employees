@@ -2,7 +2,6 @@ package com.grswebservices.employees;
 
 import java.text.NumberFormat;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Main {
     public static void main(String[] args) {
@@ -25,23 +24,13 @@ public class Main {
             Rubble, Betty, 4/4/1915, CEO, {avgStockPrice=300}
             """;
 
-        String peopleRegex = "(?<lastName>\\w+),\\s*(?<firstName>\\w+),\\s*(?<dob>\\d{1,2}/\\d{1,2}/\\d{4}),\\s*(?<role>\\w+)(?:,\\s*\\{(?<details>.*)\\})?\\n";
-        Pattern peoplePat = Pattern.compile(peopleRegex);
-        Matcher peopleMat = peoplePat.matcher(peopleText);
+        Matcher peopleMat = Employee.PEOPLE_PAT.matcher(peopleText);
 
         int totalSalaries = 0;
         Employee employee = null;
         while (peopleMat.find()) {
-            employee = switch (peopleMat.group("role")) {
-                case "Programmer" -> new Programmer(peopleMat.group());
-                case "Manager" -> new Manager(peopleMat.group());
-                case "Analyst" -> new Analyst(peopleMat.group());
-                case "CEO" -> new CEO(peopleMat.group());
-                default -> null;
-                // Employee class already implements by default a getSalary method that returns 0
-                // this won't work if Employee class is abstract, as abstract classes are not meant to be instances of
-                // default -> new Employee(peopleMat.group());
-            };
+            employee = Employee.createEmployee(peopleMat.group());
+
             if (employee != null) {
                 System.out.println(employee.toString());
                 totalSalaries+= employee.getSalary();

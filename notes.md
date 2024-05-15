@@ -75,3 +75,10 @@
 #### Abstract Class
 - v similar to superclass - but don't want to permit anyone to instantiate the abstract class itself
 - want to force some classes to implement certain methods
+
+### Factory Methods
+- we want to always ask ourselves where is the most appropriate place for certain code to live and how can we get to the point where any given class has as fewer responsibilities as possible and ideally just one responsibility.
+- Number.getCurrencyInstance() = getCurrencyInstance = a factory method (public static final), NumberFormat is an abstract class.
+- static members cannot directly interact with non-static members, because static members exist without an instance of the class being created, but these non-static members can only exist when an isntance of the class is created
+- so it's like the static method exists before, during, and after the creation of any class instances so how can this static method refer to a field which itself will only exist when an isntance o fthis class is created
+- the problem is that the mathcer we need to use in the constructor can only be created at the time when we're rnning the constructor, and tha'ts a slightly differnet timing to when we are creating this EMployee

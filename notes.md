@@ -142,3 +142,42 @@ default -> new Employee() {
 
 #### Overview
 - Probably never going to be wrong if you stick with using standard classes but in cases where you dont want others to be able to instantiate the class you can look at nested classes as an alternative.
+
+### Records
+- Java trying to keep things relevant
+- Shorthand version of a class
+- Boilerplate code - code that can be generated - code that isn't really adding value to anything - just the starting point
+- the true value of object-orientation is the combining of data with behaviour together to allow you to model the real world or business concepts.
+- when we just use an object oriented language like Java to just model data we're really missing out on a lot of the value
+- sometimes there are programs that we need to write where thaere just arent many opportunities to get into awesome modelling and all we really needed were data holders
+- however the architects of Java have become increasingly aware that there is negawtive sentiment with regards to Java and so they've come up with a solution of sorts - basicalyl a new data type
+- this data type is really just a facade on top of a class.
+```java
+// this is equivalent to the class-based version
+public record WeirdoRecord(String lastName, String firstName, LocalDate dob) implements Apple {
+}
+
+// RECORD VS CLASS
+WeirdoRecord larry = new WeirdoRecord("David", "Larry", LocalDate.of(1951, 1, 1));
+WeirdoClass larry2 = new WeirdoClass("David", "Larry", LocalDate.of(1951, 1, 1));
+
+WeirdoRecord jake = new WeirdoRecord("Snake", "Jake");
+jake.sayHello();
+```
+- Java generates for us the getters and setters, an implementation of the hashcode and equals methods, and a basic body of this constructor
+- No setter methods with Records. 
+- syntax slightly differnet: no larry.getLastName() just larry.lastName()
+- no setter methods for record because records are final, not only the record is final, which means it cannot be extended, but the fields are also final, which means once they've been set by the constructor they can't be changed, and sicne they can't be changed after the creation of the obect, there is not point in having a setter method
+- Immutability is a sought after quality of code - good idea to keep as much of your data as immutable as possible, unchangeable, create it one time and then it can't be accidentally changed, becaus that's how lots of bugs crop up in code.
+- Records build immutability right in
+- if you wanted to make a better Weirdo you make a new one
+- Sometimes immutability can be a pain but often protects us against ourselves
+- Records can implement an interface
+- can create your own constructors and methods
+- shorthand versions of classes - so that you can dispense with most of the boilerplate of classes but cant exntend any other classes
+- pro Java development in business developer involves creating lots of shallow classes that model very simple concepts liek a Person, and it's rare that any one on teams where this type of JAV development takes place is trying to arhcitect really well thought out class hieracrchies where this extends that and this implements that and that fancy stuff, may not be super common in a lot of Java shops, and so using a record to do basic data carrying, go out tot eh db go grab some information plop it into some data holder, which in this case would just be this simple Java class or record, and then send it on its way to be utilized in some other wya, maybe it will be presented to a screen or webpage, sot hat s one of the real itnended use cases of records. 
+- can define static fields on a record
+- cannot be abstract because only thing you can do with an abstract class is extend it
+- can be nested
+- maybe be cautious making all models records.
+- might not be a lot of teams that even know about records because they're new as of 2021.

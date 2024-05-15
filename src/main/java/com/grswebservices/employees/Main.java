@@ -1,6 +1,7 @@
 package com.grswebservices.employees;
 
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.util.regex.Matcher;
 
 public class Main {
@@ -35,6 +36,13 @@ public class Main {
         }
         NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
         System.out.printf("The total payout should be %s%n", currencyInstance.format(totalSalaries));
+
+        // RECORD VS CLASS
+        WeirdoRecord larry = new WeirdoRecord("David", "Larry", LocalDate.of(1951, 1, 1));
+        WeirdoClass larry2 = new WeirdoClass("David", "Larry", LocalDate.of(1951, 1, 1));
+
+        WeirdoRecord jake = new WeirdoRecord("Snake", "Jake");
+        jake.sayHello();
     }
 }
 

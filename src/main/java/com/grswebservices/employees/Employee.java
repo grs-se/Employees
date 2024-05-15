@@ -44,7 +44,14 @@ public abstract class Employee {
                 case "Manager" -> new Manager(employeeText);
                 case "Analyst" -> new Analyst(employeeText);
                 case "CEO" -> new CEO(employeeText);
-                default -> new DummyEmployee();
+                // Anonymous class
+                default -> new Employee() {
+                    @Override
+                    public int getSalary() {
+                        return 0;
+                    }
+                };
+                // default -> new DummyEmployee();
             };
         } else {
             return new DummyEmployee();
@@ -70,10 +77,25 @@ public abstract class Employee {
     // inherited no arg default constructor is called
     // final because we prevent any other class from extending it
     // read 'Effective Java' by Joshua Bloch
+    // STATIC NESTED CLASS
     private static final class DummyEmployee extends Employee {
         @Override
         public int getSalary() {
+            // can access firstname because it is extending Employee
+            // System.out.println(firstName);
             return 0;
         }
     }
+
+    // NON-STATIC / INNER NESTED CLASS
+    private final class MyInnerClass {
+        public int getStuff() {
+            // isn't inheriting firstname, it can access firstname from the enclosing class
+            System.out.println(firstName);
+            return 0;
+        }
+    }
+
+    // ANONYMOUS CLASS
+
 }

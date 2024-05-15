@@ -100,3 +100,45 @@ private static final class DummyEmployee extends Employee {
     }
 }
  ```
+#### Other types of nested classes
+- few different kinds of nested classes:
+- static nested class
+- non-static nested or 'inner' class
+- when no static = inner
+- if your nested class needs to access fields of the enclosing class then you may need to consider using an inner class. 
+- one of the main differences between a static nested class and an inner class is the fact that since a static nested class is static it is not allowed to access fields of its enclosing class.
+- because fields of that class only exist once you create an instance of that class but static members of that class exist prior to, during and after the class has been instantiated
+- however, non-static nested classes or inner classes actually can access their enclosing classes members. 
+- So that would be one reason why you would want to create an inner class - if your inner class actually needed access to the enclosing member fields or methods.
+
+#### Anonymous Class
+- if I only wanted to instantiate DummyClass once, then could have used an Anonymous class.
+- without a name
+- all other respects similar 
+- don't need private static final class because can't even refer to it - has no bearing.
+- you refer to either an Interface or a SuperClass that this new anonoymous class is a subclass of.
+```java
+// Anonymous class
+default -> new Employee() {
+    @Override
+    public int getSalary() {
+        return 0;
+    }
+};
+// default -> new DummyEmployee(); 
+```
+- Anonymous classes do both the declaration and the instantiation all in one
+- syntax with new operator and what looks like a constructor, curly braces and defining methods inside, so all wrapped in one.
+- could also have done this with the interface IEmployee
+- One-off
+- Anonymous classes look noisy - not a huge fan, but have a long history of use in Java particularly in graphics coding.
+
+#### Local Nested Class
+- never really use them in 20 years of pro experience
+- local variable is a variable defined in code block
+- can also define an entire nested class inside of a method
+- Narrow scoped class
+- not adviseable - looks like too much noise, although limiting the scope is good
+
+#### Overview
+- Probably never going to be wrong if you stick with using standard classes but in cases where you dont want others to be able to instantiate the class you can look at nested classes as an alternative.

@@ -191,4 +191,25 @@ jake.sayHello();
 - so we don't have to create all the boilerplate - new class, etc etc. 
 - as minimal as can be.
 - "magical"
-- lamdbas work so perfectly in line with all the other concepts that have been leading up to here, with nested classes, inner classes, anonoymous classes, and the most logical conclusion of all of that in many cases is the Lambda - we just didnt have access to those before Java 8. 
+- lamdbas work so perfectly in line with all the other concepts that have been leading up to here, with nested classes, inner classes, anonoymous classes, and the most logical conclusion of all of that in many cases is the Lambda - we just didnt have access to those before Java 8.
+
+### Composition vs Inheritance
+- although can't extend from multiple classes, can be composed of cmultiple classes
+- delegate methods - methods that mirror the public methods of the Pilot class, just passing through
+- if I want a class to be able to implement and sudo-inherit functionality from multiple other classes that are otherwise unrelated I can still do that with this technique of composition
+- composition: CEO is composed from Pilot instance, and could have 1000 other classes and could compose CEO of those other classes too
+- altought you do need to explicity add al delegate methods - but IDE can do this for you
+- composition gets around problem of lack of multiple inheritance
+- Java developers will say that we should actually prefer compositon over inheritance - better generally to imbue classes with functionality from other classes using this technique of composition, rather than just extending a class.
+- in general if you wrote this super class and you are also are writing the potential sub class and you want your subclass to extend your super class and you wrote both of them, generally speaking go for it! Not many levels deep though, recpie for disaster, keep it relatively shallow, 3 levels at max.
+- if you wrote everything in that hierarchy and wrote it intending to have a hierarchy you're fine.
+- where this favouring of composition over inheritance really comes into play is in a different scenario where you did not write the class that you are considering extending, the class might be from ather developer from another team, even from another organisation, and ypou dont necesarily know if the author of that class intended it to be extended.
+- sometimes frameworks creates classes that are itnended to be extended
+- tread carefully - you may be making assumptions about how the methods in thtt class are operating, at any time the author of htat calss could decide to change those implementations and you may receive those upadtaes and your assumptions cause your code to be broken, fragile code.
+- recommended if you are author of class and youd otn intend that class to be inherited by yourself or anywone esle you may explicty declare that class to be final, to prevent others from extending your class, to protect them from themsevles essentially.
+- however you can still consider endowing your class with the functioanlity of another class by using composition. This is better because you have more control over what's gong on. You ave to explicitly in the delegate methods the other classes method and so you get the chance to override what it's doing, you could do this with inheritance as well, but its' even more explicity when you're using these delegate methods.
+- And then obviously it allow you to get around the fact that Java is not gojng to allow you to inherit from more than one class. So Java developers have to pick wisely on what class you want to spend on your one and only inheritance shot, but with composition it doesnt matter, you can compse your class of as many classes as your want.
+- Inheritance is a powerful technique that you should not be afraid to use, so if soemone tells you in a blanket statement that you should not use Inheritance your missing out on a lot o what an object oreitend language can giv you.
+- When is it a good idea to use Inheritance and when abad idea?
+- Why are even using Java if you're not going to use a lot of the oBject Oritended techniques? middle ground. 
+- efficient and effective ways

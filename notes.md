@@ -229,3 +229,53 @@ jake.sayHello();
 - isntanceof can check for hierarchy and honours class hierarchy
 - pattern matching
 - newer Java features = allow us type less
+
+### Unnamed Patterns
+- new functioanlity java 21 only works with Records as of Java 21
+
+### Polymorphism
+- Polymorphism means "many forms", and it occurs when we have many classes that are related to each other by inheritance.
+
+- Like we specified in the previous chapter; Inheritance lets us inherit attributes and methods from another class. Polymorphism uses those methods to perform different tasks. This allows us to perform a single action in different ways.
+
+- For example, think of a superclass called Animal that has a method called animalSound(). Subclasses of Animals could be Pigs, Cats, Dogs, Birds - And they also have their own implementation of an animal sound (the pig oinks, and the cat meows, etc.):
+
+```java
+class Animal {
+  public void animalSound() {
+    System.out.println("The animal makes a sound");
+  }
+}
+
+class Pig extends Animal {
+  public void animalSound() {
+    System.out.println("The pig says: wee wee");
+  }
+}
+
+class Dog extends Animal {
+  public void animalSound() {
+    System.out.println("The dog says: bow wow");
+  }
+}
+
+class Main {
+  public static void main(String[] args) {
+    Animal myAnimal = new Animal();  // Create a Animal object
+    Animal myPig = new Pig();  // Create a Pig object
+    Animal myDog = new Dog();  // Create a Dog object
+    myAnimal.animalSound();
+    myPig.animalSound();
+    myDog.animalSound();
+  }
+}
+```
+
+### OOP Recap
+- encapsulation = to combine data and behaviour together in one unit (class or object) where it makes sense.
+- inheritance = extends, inherits super classes data and behaviour, almost as if those fields and methods were defined on subclass, sublclasses can reuse
+- composition = get more functionality for very little cost because just calling some other classes functionality. Can compose one class using the data and behaviour of another class by creating an instance of that class within the other. Can use delegate methods. Also, can use composition to get around Java not supporting multiple inheritance.
+- polymorphism = the caller of a class doesn't necessarily need to know what the type of that class is.Making many shapes appear like one essentially. Wihtout polymorphism code becomes more convoluted. keep classes short and sweet - polymorphism essentially prevents us from makign convoluted conditional checks
+- interfaces = gutted out class, simply states methods that need to implemented by classes that implement that interface. A mask over a class.
+- abstract classes = inbetween interfaces and concrete classes. Delay implementation detail until later point in time in subclass.
+- important concept in Object Orientation = unless you have a specific reason not to do so you should generally store instances of your objects in the most generic data type that allows you to get your work done. Allows you to be free to add new types without breaking code.

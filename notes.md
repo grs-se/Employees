@@ -223,4 +223,9 @@ jake.sayHello();
 - what is the difference between default methods on interfaces and abstract classes? extremely similar: abstract class is a class, one that cant be instantiated on its own, it can maintain state, can put instance variables or fields, whereas intrerfaces you can't, variables are final.
 - beware using this technique for multiple inheritance on commercial projects where lots of developers.
 - This is meant for people who are making frameworks and APIs, not so much intended for end user developers who writing in house code that they completely own on their own.
-- if you own all the code othen you can design the code in such a way where either you wont needmultiple inheritance because you can just dbuild the functioanlity that you need right in to the classes where you need them in the first pace, or you can always use compositon. 
+- if you own all the code othen you can design the code in such a way where either you wont needmultiple inheritance because you can just dbuild the functioanlity that you need right in to the classes where you need them in the first pace, or you can always use compositon.
+
+### Comparing Classes with "instanceOf"
+- isntanceof can check for hierarchy and honours class hierarchy
+- pattern matching
+- newer Java features = allow us type less

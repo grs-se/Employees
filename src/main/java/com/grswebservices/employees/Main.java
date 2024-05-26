@@ -37,6 +37,40 @@ public class Main {
         IEmployee employee = null;
         while (peopleMat.find()) {
             employee = Employee.createEmployee(peopleMat.group());
+
+            // JAVA 17 switch
+            switch (employee) {
+                case Programmer prog -> System.out.println(prog.getIq());
+                case Manager man -> System.out.println(man.toString());
+                case Analyst analyst ->
+                    // older / conventional way before pattern matching
+                        System.out.println(analyst.toString());
+                case CEO ceo -> System.out.println();
+                default -> System.out.println("Default output");
+            }
+
+            // pattern matching available Java 16
+//            if (employee instanceof Programmer prog) {
+//                System.out.println(prog.getIq());
+//            } else if (employee instanceof Manager man) {
+//                System.out.println(man.toString());
+//            } else if (employee instanceof Analyst) {
+//                // older / conventional way before pattern matching
+//                Analyst analyst = (Analyst) employee;
+//                System.out.println(analyst.toString());
+//            } else if (employee instanceof CEO) {
+//                System.out.println();
+//            } else {
+//                System.out.println("Default output");
+//            }
+            // Not idiomatic Java:
+//            if (employee.getClass().equals(Programmer.class)) {
+//                System.out.println();
+//            } else if (employee.getClass().equals(Manager.class)) {
+//                System.out.println();
+//            } else {
+//                System.out.println("Default output");
+//            }
             System.out.println(employee.toString());
             totalSalaries+= employee.getSalary();
         }

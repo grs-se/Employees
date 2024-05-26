@@ -213,3 +213,14 @@ jake.sayHello();
 - When is it a good idea to use Inheritance and when abad idea?
 - Why are even using Java if you're not going to use a lot of the oBject Oritended techniques? middle ground. 
 - efficient and effective ways
+- 
+### Default Methods
+- newer technique that you could consder using to get around the lack of traditional support for multiple inheritance in Java, though caution, tread lightly if using this. 
+- wasn't primarily intended for getting around multiple inheritance, intended for somethign else.
+- As of Java 8 interfaces have been expanded in tersm of what they can do and so now there is a way to supply an implementation with methods in interfaces.
+- caveat: with interaces can't inherit data, can't hold state, which is a major aspect of oop and classes. When we put a field on an interface that field is made final by Java, and so can't change the value of it. default method can retrieve it but cant change it,
+- original use case for default methods in interfaces: pre existing classes that implement interfaces, don't want to add impementations of new methods to all classes that implement interface, and so add implementation to interface.
+- what is the difference between default methods on interfaces and abstract classes? extremely similar: abstract class is a class, one that cant be instantiated on its own, it can maintain state, can put instance variables or fields, whereas intrerfaces you can't, variables are final.
+- beware using this technique for multiple inheritance on commercial projects where lots of developers.
+- This is meant for people who are making frameworks and APIs, not so much intended for end user developers who writing in house code that they completely own on their own.
+- if you own all the code othen you can design the code in such a way where either you wont needmultiple inheritance because you can just dbuild the functioanlity that you need right in to the classes where you need them in the first pace, or you can always use compositon. 

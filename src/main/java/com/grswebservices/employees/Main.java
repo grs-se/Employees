@@ -29,6 +29,10 @@ public class Main {
         Flyer flyer = new CEO("");
         flyer.fly();
 
+        Programmer coder = new Programmer("");
+        // cook method is inherited from the interface
+        coder.cook("Hamburger");
+
         int totalSalaries = 0;
         IEmployee employee = null;
         while (peopleMat.find()) {

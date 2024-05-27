@@ -2,6 +2,8 @@ package com.grswebservices.employees;
 
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 
 public class Main {
@@ -26,30 +28,47 @@ public class Main {
             """;
 
         Matcher peopleMat = Employee.PEOPLE_PAT.matcher(peopleText);
-        Flyer flyer = new CEO("");
-        flyer.fly();
-
-        Programmer coder = new Programmer("");
-        // cook method is inherited from the interface
-        coder.cook("Hamburger");
 
         int totalSalaries = 0;
         IEmployee employee = null;
+        List<IEmployee> employees = new ArrayList<>();
         while (peopleMat.find()) {
             employee = Employee.createEmployee(peopleMat.group());
+            employees.add(employee);
+        }
+        // for loop specifically designed for Collections
+        for (IEmployee worker: employees) {
+            System.out.println(worker.toString());
+            totalSalaries+= worker.getSalary();
+        }
+        NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
+        System.out.printf("The total payout should be %s%n", currencyInstance.format(totalSalaries));
 
-            // JAVA 17 switch
-            switch (employee) {
-                case Programmer prog -> System.out.println(prog.getIq());
-                case Manager man -> System.out.println(man.toString());
-                case Analyst analyst ->
-                    // older / conventional way before pattern matching
-                        System.out.println(analyst.toString());
-                case CEO ceo -> System.out.println();
-                default -> System.out.println("Default output");
-            }
+        // RECORD VS CLASS
+        WeirdoRecord larry = new WeirdoRecord("David", "Larry", LocalDate.of(1951, 1, 1));
+        WeirdoClass larry2 = new WeirdoClass("David", "Larry", LocalDate.of(1951, 1, 1));
 
-            // pattern matching available Java 16
+        WeirdoRecord jake = new WeirdoRecord("Snake", "Jake");
+        jake.sayHello();
+
+
+    }
+}
+
+
+
+// JAVA 17 switch
+//            switch (employee) {
+//                case Programmer prog -> System.out.println(prog.getIq());
+//                case Manager man -> System.out.println(man.toString());
+//                case Analyst analyst ->
+//                    // older / conventional way before pattern matching
+//                        System.out.println(analyst.toString());
+//                case CEO ceo -> System.out.println();
+//                default -> System.out.println("Default output");
+//            }
+
+// pattern matching available Java 16
 //            if (employee instanceof Programmer prog) {
 //                System.out.println(prog.getIq());
 //            } else if (employee instanceof Manager man) {
@@ -63,7 +82,7 @@ public class Main {
 //            } else {
 //                System.out.println("Default output");
 //            }
-            // Not idiomatic Java:
+// Not idiomatic Java:
 //            if (employee.getClass().equals(Programmer.class)) {
 //                System.out.println();
 //            } else if (employee.getClass().equals(Manager.class)) {
@@ -71,25 +90,9 @@ public class Main {
 //            } else {
 //                System.out.println("Default output");
 //            }
-            // Polymorphism
+// Polymorphism
 //            System.out.println(employee.toString());
 //            totalSalaries+= employee.getSalary();
-        }
-        NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
-        System.out.printf("The total payout should be %s%n", currencyInstance.format(totalSalaries));
-
-        // RECORD VS CLASS
-        /*
-        WeirdoRecord larry = new WeirdoRecord("David", "Larry", LocalDate.of(1951, 1, 1));
-        WeirdoClass larry2 = new WeirdoClass("David", "Larry", LocalDate.of(1951, 1, 1));
-
-        WeirdoRecord jake = new WeirdoRecord("Snake", "Jake");
-        jake.sayHello();
-        */
-
-    }
-}
-
 
 /*
 /// BAD PROCEDURAL IMPLEMENTATION

@@ -3,6 +3,7 @@ package com.grswebservices.employees;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -10,7 +11,7 @@ public class Main {
     public static void main(String[] args) {
         String peopleText = """
             Flinstone, Fred, 1/1/1900, Programmer, {locpd=2000,yoe=10,iq=140}
-            Flinstone, Fred, 1/1/1900, Programmer, {locpd=1300,yoe=14,iq=100}
+            Flinstone, Fred, 1/1/1900, Programmerzzzzz, {locpd=1300,yoe=14,iq=100}
             Flinstone, Fred, 1/1/1900, Programmer, {locpd=2300,yoe=8,iq=105}
             Flinstone, Fred, 1/1/1900, Programmer, {locpd=1630,yoe=3,iq=115}
             Flinstone, Fred, 1/1/1900, Programmer, {locpd=5,yoe=10,iq=100}
@@ -31,13 +32,25 @@ public class Main {
 
         int totalSalaries = 0;
         IEmployee employee = null;
-        List<IEmployee> employees = new ArrayList<>();
+
+        List<IEmployee> employees = new LinkedList<>();
+
         while (peopleMat.find()) {
             employee = Employee.createEmployee(peopleMat.group());
             employees.add(employee);
         }
-        // for loop specifically designed for Collections
+
+        List<String> removalNames = new ArrayList<>();
+        removalNames.add("Wilma5");
+        removalNames.add("Barney4");
+        removalNames.add("Fred2");
+
         for (IEmployee worker: employees) {
+            if (worker instanceof Employee tmpWorker) {
+                if (removalNames.contains(tmpWorker.firstName)) {
+                employees.remove(worker);
+                }
+            }
             System.out.println(worker.toString());
             totalSalaries+= worker.getSalary();
         }

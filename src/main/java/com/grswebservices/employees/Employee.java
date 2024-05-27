@@ -36,7 +36,7 @@ public abstract class Employee implements IEmployee {
 
     // employeeText = "Flinstone, Wilma, 3/3/1910, Analyst, {projectCount=3}"
     // want to force everyone to only use this factory method then make constructors protected
-    public static IEmployee createEmployee(String employeeText) {
+    public static final IEmployee createEmployee(String employeeText) {
         Matcher peopleMat = Employee.PEOPLE_PAT.matcher(employeeText);
         if (peopleMat.find()) {
             return switch (peopleMat.group("role")) {

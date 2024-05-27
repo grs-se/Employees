@@ -42,3 +42,32 @@ List<IEmployee> employees = new LinkedList<>();
 - enhanced for loop is primary preferred way of iterating
 - ConcurrentModificationException = common error, novice devs: trying to remove something from the list while looping over the list, trying to change a tyre in the car while the car is moving. JDK - two or more threads. One thread loops over collection, but then another tries to remove items from the collection, and Java senses that something like that could be happenng, chaotic.
 - ask first thread to remove when it has time.
+
+## Looping with Iterators
+- Another type of loop to iterate over a collection which enables us to remove items from that collection. 
+- Enhanced for loop gives us the indvudal elements of a collecitoon, prefered loop in most scenarios, unless you need to remove items from the colletcion while you are iterating over them.
+- In that case use another for loop which is closer to more traditional for loop but uses an iterator.
+- 2 threads
+- the enhanced for-loop uses thsi iterator internally
+- collections have the ability to create an iterator for us and so that's what we put in here
+- farily old school way of for lopp, not usually recommended, but if you have to remove items from a collection while loopong over collection, this is way to do that.
+- increment section leave blank 
+- iterator is not actual worker, so need to pull worker out of iterator
+- .next() operator gives us the next element int he colleciton.
+
+```java
+// remove an element from a collection while iterating over the collection (traditional loop)
+// better ways to do this
+private static void removeUndesirables(List<IEmployee> employees, List<String> removalNames) {
+    // old school way, lambdas make this easier
+    for (Iterator<IEmployee> it = employees.iterator(); it.hasNext();) {
+        IEmployee worker = it.next();
+        if (worker instanceof Employee tmpWorker) {
+            if (removalNames.contains(tmpWorker.firstName)) {
+                it.remove();
+            }
+        }
+    }
+}
+```
+- try to keep methods short - 10 - 20 lines if possible

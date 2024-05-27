@@ -35,10 +35,31 @@ public class Main {
         IEmployee employee = null;
         List<IEmployee> employees = populateEmployees(peopleMat);
 
-        List<String> removalNames = createUndesirablesList();
+        List<String> undesirables = createUndesirablesList();
 
-        removeUndesirables(employees, removalNames);
+        removeUndesirables(employees, undesirables);
 
+        // Additional List Methods
+        // employees.add(0, new Programmer(""));
+
+        IEmployee third = employees.get(2);
+        employees.indexOf(third);
+
+        // sometimes old libraries will require you to pass in an array of objects rather than a collection
+        // 2nd approach should be preferred as it is more type safe.
+        Object[] genericArray = employees.toArray();
+        // specify size of array
+        IEmployee[] otherArray = employees.toArray(new IEmployee[0]);
+
+        List<IEmployee> sublist = employees.subList(0, 3);
+        System.out.printf("sublist = %s", sublist);
+
+        // set = replace
+        employees.set(0, Employee.createEmployee("Rubble, Betty, 4/4/1915, CEO, {avgStockPrice=300}"));
+
+        List<String> newStrings = new ArrayList<>();
+        newStrings.addAll(undesirables);
+        System.out.println(newStrings.size());
 
         totalSalaries = tabulateEmployees(employees, totalSalaries);
 
@@ -56,11 +77,7 @@ public class Main {
     }
 
     private static List<String> createUndesirablesList() {
-        List<String> removalNames = new ArrayList<>();
-        removalNames.add("Wilma5");
-        removalNames.add("Barney4");
-        removalNames.add("Fred2");
-        return removalNames;
+        return new ArrayList<>(List.of("Wilma5", "Barney4", "Fred2"));
     }
 
     private static int tabulateEmployees(List<IEmployee> employees, int totalSalaries) {
@@ -73,7 +90,8 @@ public class Main {
 
     private static List<IEmployee> populateEmployees(Matcher peopleMat) {
         IEmployee employee;
-        List<IEmployee> employees = new LinkedList<>();
+        // initialCapacity - benefit save memory, or time to prevent new array from having to be created if initial array size is too small
+        List<IEmployee> employees = new ArrayList<>(16);
         while (peopleMat.find()) {
             employee = Employee.createEmployee(peopleMat.group());
             employees.add(employee);
@@ -95,7 +113,15 @@ public class Main {
     }
 }
 
-
+//IEmployee first = employees.get(0);
+//IEmployee second = employees.get(1);
+//IEmployee third = employees.get(2);
+//
+//        employees.remove(first);
+//        employees.remove(second);
+//        employees.remove(third);
+//
+//        employees.remove(0);
 
 // JAVA 17 switch
 //            switch (employee) {

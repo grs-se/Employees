@@ -71,3 +71,18 @@ private static void removeUndesirables(List<IEmployee> employees, List<String> r
 }
 ```
 - try to keep methods short - 10 - 20 lines if possible
+- can get an iterator from a Set
+
+## Additional List Methods
+- List.of() = unmodifiable list - can't add or remove
+- considered dangerous or error prine to have objects including collections that can be modified after they have been initliaized
+- Java has been adopting functional paradigms.
+- can wrap List.of() in ArrayList and now this is modifiable
+
+```java
+private static List<String> createUndesirablesList() {
+    return new ArrayList<>(List.of("Wilma5", "Barney4", "Fred2"));
+}
+```
+- retainAll()
+- set() - replace element in list

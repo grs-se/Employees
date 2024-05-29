@@ -86,3 +86,30 @@ private static List<String> createUndesirablesList() {
 ```
 - retainAll()
 - set() - replace element in list
+
+### List.contains() & Object.equals()
+
+```java
+ // List.contains() & Object.equals()
+IEmployee myEmp = employees.get(5);
+System.out.println(employees.contains(myEmp)); // true
+
+IEmployee employee1 = Employee.createEmployee("Flinstone5, Fred5, 1/1/1900, Programmer, {locpd=5,yoe=10,iq=100}");
+System.out.println(employees.contains(employee1)); // false - duplicated an employee verbatim using the same data pamameters but we get false
+
+// compares individual fields
+@Override
+public boolean equals(Object o) {
+    // if this object points to the same memory location as that object they are equal, don't need to test anymore
+    if (this == o) return true;
+    // if this other object that is being passed in for equality testing is not even of the same type as this object that I am in (Employee), then failed test.
+    if (o == null || getClass() != o.getClass()) return false;
+    // by this stage we know they are of same type and so we can cast this o to the type Employee so we can start drilling into it's fields which we couldn't do as an Object
+    Employee employee = (Employee) o;
+    // if all equal then return true
+    return Objects.equals(lastName, employee.lastName) && Objects.equals(firstName, employee.firstName) && Objects.equals(dob, employee.dob);
+}
+```
+- can't change the signature because then you're not overiding the equals method, you're creating your own equals method 
+- the contains method only knows to look for the inherited equals method with this exact signature 
+- so now cast generic Object ijnto specific type Employee

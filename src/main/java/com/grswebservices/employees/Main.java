@@ -51,27 +51,44 @@ public class Main {
         // specify size of array
         IEmployee[] otherArray = employees.toArray(new IEmployee[0]);
 
-        List<IEmployee> sublist = employees.subList(0, 3);
-        System.out.printf("sublist = %s", sublist);
+//        List<IEmployee> sublist = employees.subList(0, 3);
+//        System.out.printf("sublist = %s", sublist);
 
         // set = replace
         employees.set(0, Employee.createEmployee("Rubble, Betty, 4/4/1915, CEO, {avgStockPrice=300}"));
 
-        List<String> newStrings = new ArrayList<>();
-        newStrings.addAll(undesirables);
-        System.out.println(newStrings.size());
+        // List.contains() & Object.equals()
+        IEmployee myEmp = employees.get(5);
+        System.out.println(employees.contains(myEmp)); // true
 
-        totalSalaries = tabulateEmployees(employees, totalSalaries);
+        IEmployee employee1 = Employee.createEmployee("Flinstone5, Fred5, 1/1/1900, Programmer, {locpd=5,yoe=10,iq=101}");
+        System.out.println(employees.contains(employee1)); // false - duplicated an employee verbatim using the same data pamameters but we get false
 
-        NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
-        System.out.printf("The total payout should be %s%n", currencyInstance.format(totalSalaries));
+        System.out.println(myEmp.equals(employee1));
 
-        // RECORD VS CLASS
-        WeirdoRecord larry = new WeirdoRecord("David", "Larry", LocalDate.of(1951, 1, 1));
-        WeirdoClass larry2 = new WeirdoClass("David", "Larry", LocalDate.of(1951, 1, 1));
+//        Programmer p1 = new Programmer("");
+//        Programmer p2 = new Programmer("");
+        // default implementation of equals method compares whether p1 and p2 are both pointing to the same address in memory
+//        p1.equals(p2); // p1 == p2: equivalent - equals operator tests whether two object references point to the same address in memory, wich would mean effetcively that they are the same object
+        // however we may not want that. When we ask is p1 = to p2 what we usually actually mean is are the intrinsic and unchangeable properties of p1 actually the same, a different question to do p1 and p2 point to the same address in memory. Interesting distinction.
+        // if we do not overide the default equals method then we simply ask whether the two object point tot he same address in memory
+        // can provide own custom implementation of equals method.
 
-        WeirdoRecord jake = new WeirdoRecord("Snake", "Jake");
-        jake.sayHello();
+//        List<String> newStrings = new ArrayList<>();
+//        newStrings.addAll(undesirables);
+//        System.out.println(newStrings.size());
+//
+//        totalSalaries = tabulateEmployees(employees, totalSalaries);
+//
+//        NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
+//        System.out.printf("The total payout should be %s%n", currencyInstance.format(totalSalaries));
+//
+//        // RECORD VS CLASS
+//        WeirdoRecord larry = new WeirdoRecord("David", "Larry", LocalDate.of(1951, 1, 1));
+//        WeirdoClass larry2 = new WeirdoClass("David", "Larry", LocalDate.of(1951, 1, 1));
+//
+//        WeirdoRecord jake = new WeirdoRecord("Snake", "Jake");
+//        jake.sayHello();
 
 
     }

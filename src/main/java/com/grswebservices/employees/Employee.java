@@ -3,13 +3,14 @@ package com.grswebservices.employees;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class Employee implements IEmployee {
     protected final DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     protected final NumberFormat moneyFormat = NumberFormat.getCurrencyInstance();
-    private static final String PEOPLE_REGEX = "(?<lastName>\\w+),\\s*(?<firstName>\\w+),\\s*(?<dob>\\d{1,2}/\\d{1,2}/\\d{4}),\\s*(?<role>\\w+)(?:,\\s*\\{(?<details>.*)\\})?\\n";
+    private static final String PEOPLE_REGEX = "(?<lastName>\\w+),\\s*(?<firstName>\\w+),\\s*(?<dob>\\d{1,2}/\\d{1,2}/\\d{4}),\\s*(?<role>\\w+)(?:,\\s*\\{(?<details>.*)\\})?";
     public static final Pattern PEOPLE_PAT = Pattern.compile(PEOPLE_REGEX);
     protected final Matcher peopleMat;
     protected String lastName;
@@ -96,6 +97,21 @@ public abstract class Employee implements IEmployee {
         }
     }
 
-    // ANONYMOUS CLASS
+    // compares individual fields
+    @Override
+    public boolean equals(Object o) {
+        // if this object points to the same memory location as that object they are equal, don't need to test anymore
+        if (this == o) return true;
+        // if this other object that is being passed in for equality testing is not even of the same type as this object that I am in (Employee), then failed test.
+        if (o == null || getClass() != o.getClass()) return false;
+        // by this stage we know they are of same type and so we can cast this o to the type Employee so we can start drilling into it's fields which we couldn't do as an Object
+        Employee employee = (Employee) o;
+        // if all equal then return true
+        return Objects.equals(lastName, employee.lastName) && Objects.equals(firstName, employee.firstName) && Objects.equals(dob, employee.dob);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(lastName, firstName, dob);
+    }
 }

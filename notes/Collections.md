@@ -153,3 +153,37 @@ private static void sortEmployees(List<IEmployee> employees) {
     });
 }
 ```
+
+### Implementing Comparable to Sort Lists
+```java
+
+public static <T> void sort(List<T> list, Comparator<? super T> c) {
+        // THIS IS CALLED...
+        list.sort(c);
+    }
+    
+private static void sortEmployeesV3(List<IEmployee> employees) {
+    // ...BY THIS
+    Collections.sort(employees,(o1, o2) -> {
+        if (o1 instanceof Employee emp1 && o2 instanceof Employee emp2) {
+            int lnameResult = emp1.lastName.compareTo(emp2.lastName);
+            return lnameResult != 0 ? lnameResult : Integer.compare(emp1.getSalary(), emp2.getSalary());
+        }
+        return 0;
+    });
+}
+
+```
+- "computer natural ordering" - doesn't perceive 10 but 1 followed by 0, so why 10 often comes before 2 in natural ordering
+- what does it actually mean to naturally order Employees?
+- If we want our class Employee to be sortable with minimal effort on our part, from the perspective of calling the .sort() method, we need to implement the Comparable interface.
+- a functional interface only defines one method. More than one abstract method, can no longer use interface with lambda expressions.
+- if you don't want to have to define and create your own comparator you can avoid doing that, however the objects you plan to compare have to implement the Comparable interface
+
+```java
+public interface IEmployee extends Comparable<IEmployee> {
+    int getSalary();
+}
+```
+- string, dates, numeric wrapper classes - all implement Comparable - 790 classes implement Comparable
+- more algorithms for sorting, for instance Collections.shuffle();

@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class Employee implements IEmployee {
+    public abstract class Employee implements IEmployee {
     protected final DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     protected final NumberFormat moneyFormat = NumberFormat.getCurrencyInstance();
     private static final String PEOPLE_REGEX = "(?<lastName>\\w+),\\s*(?<firstName>\\w+),\\s*(?<dob>\\d{1,2}/\\d{1,2}/\\d{4}),\\s*(?<role>\\w+)(?:,\\s*\\{(?<details>.*)\\})?";
@@ -45,9 +45,9 @@ public abstract class Employee implements IEmployee {
                 case "Manager" -> new Manager(employeeText);
                 case "Analyst" -> new Analyst(employeeText);
                 case "CEO" -> new CEO(employeeText);
+                default -> new DummyEmployee();
                 // Lambda
-                default -> () -> 0;
-
+                // default -> () -> 0;
                 /*
                 // Anonymous class
                 default -> new Employee() {
@@ -58,7 +58,6 @@ public abstract class Employee implements IEmployee {
                 };
                 */
 
-                // default -> new DummyEmployee();
             };
         } else {
             return new DummyEmployee();
@@ -88,7 +87,13 @@ public abstract class Employee implements IEmployee {
         }
     }
 
-    // NON-STATIC / INNER NESTED CLASS
+    @Override
+    public int compareTo(IEmployee o) {
+        Employee other = (Employee) o;
+        return this.lastName.compareTo(other.lastName);
+    }
+
+        // NON-STATIC / INNER NESTED CLASS
     private final class MyInnerClass {
         public int getStuff() {
             // isn't inheriting firstname, it can access firstname from the enclosing class

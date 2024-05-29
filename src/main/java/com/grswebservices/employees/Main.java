@@ -63,7 +63,17 @@ public class Main {
 
         System.out.println(myEmp.equals(employee1));
 
-        sortEmployees(employees);
+        sortEmployeesV1(employees);
+
+        sortEmployeesV2(employees);
+
+        sortEmployeesV3(employees);
+
+//        undesirables.sort(Comparator.naturalOrder());
+        System.out.println(undesirables);
+
+//        Collections.shuffle();
+        Collections.sort(employees, Comparator.reverseOrder());
 
 //        Programmer p1 = new Programmer("");
 //        Programmer p2 = new Programmer("");
@@ -92,7 +102,17 @@ public class Main {
 
     }
 
-    private static void sortEmployees(List<IEmployee> employees) {
+    private static void sortEmployeesV3(List<IEmployee> employees) {
+        Collections.sort(employees,(o1, o2) -> {
+            if (o1 instanceof Employee emp1 && o2 instanceof Employee emp2) {
+                int lnameResult = emp1.lastName.compareTo(emp2.lastName);
+                return lnameResult != 0 ? lnameResult : Integer.compare(emp1.getSalary(), emp2.getSalary());
+            }
+            return 0;
+        });
+    }
+
+    private static void sortEmployeesV2(List<IEmployee> employees) {
         // Lambda version
           employees.sort((o1, o2) -> {
             if (o1 instanceof Employee emp1 && o2 instanceof Employee emp2) {
@@ -103,23 +123,23 @@ public class Main {
         });
     }
 
-//    private static void sortEmployees(List<IEmployee> employees) {
-//        employees.sort(new Comparator<IEmployee>() {
-//            @Override
-//            // comparator - sorting algorithm (technique) - merge-sort - a number fo strategies of how to sort things
-//            // returns an integer of which one comes first or second, o1 comes before o2? = -1, o2 before o1 = 1, both equal = 0
-//            public int compare(IEmployee o1, IEmployee o2) {
-//                // if o1 is an instance of Employee then go ahead and create a variable of type Employee and use that recast o1 as an actual Employee
-//                if (o1 instanceof Employee emp1 && o2 instanceof Employee emp2) {
-//                    // if lastNames aren't equal then sort by lastName but if they are equal then sort by salary
-//                    int lnameResult = emp1.lastName.compareTo(emp2.lastName);
-//                    return lnameResult != 0 ? lnameResult : Integer.compare(emp1.getSalary(), emp2.getSalary());
-//                    // return emp1.dob.compareTo(emp2.dob);
-//                }
-//                return 0;
-//            }
-//        });
-//    }
+    private static void sortEmployeesV1(List<IEmployee> employees) {
+        employees.sort(new Comparator<IEmployee>() {
+            @Override
+            // comparator - sorting algorithm (technique) - merge-sort - a number fo strategies of how to sort things
+            // returns an integer of which one comes first or second, o1 comes before o2? = -1, o2 before o1 = 1, both equal = 0
+            public int compare(IEmployee o1, IEmployee o2) {
+                // if o1 is an instance of Employee then go ahead and create a variable of type Employee and use that recast o1 as an actual Employee
+                if (o1 instanceof Employee emp1 && o2 instanceof Employee emp2) {
+                    // if lastNames aren't equal then sort by lastName but if they are equal then sort by salary
+                    int lnameResult = emp1.lastName.compareTo(emp2.lastName);
+                    return lnameResult != 0 ? lnameResult : Integer.compare(emp1.getSalary(), emp2.getSalary());
+                    // return emp1.dob.compareTo(emp2.dob);
+                }
+                return 0;
+            }
+        });
+    }
 
 
     private static List<String> createUndesirablesList() {

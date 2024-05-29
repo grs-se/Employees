@@ -113,3 +113,43 @@ public boolean equals(Object o) {
 - can't change the signature because then you're not overiding the equals method, you're creating your own equals method 
 - the contains method only knows to look for the inherited equals method with this exact signature 
 - so now cast generic Object ijnto specific type Employee
+
+---
+
+### Implementing Comparator to Sort Lists
+- comparator - sorting algorithm (technique) - merge-sort - a number fo strategies of how to sort things
+
+```java
+private static void sortEmployees(List<IEmployee> employees) {
+    employees.sort(new Comparator<IEmployee>() {
+        @Override
+        // comparator - sorting algorithm (technique) - merge-sort - a number fo strategies of how to sort things
+        // returns an integer of which one comes first or second, o1 comes before o2? = -1, o2 before o1 = 1, both equal = 0
+        public int compare(IEmployee o1, IEmployee o2) {
+            // if o1 is an instance of Employee then go ahead and create a variable of type Employee and use that recast o1 as an actual Employee
+            if (o1 instanceof Employee emp1 && o2 instanceof Employee emp2) {
+                // if lastNames aren't equal then sort by lastName but if they are equal then sort by salary
+                int lnameResult = emp1.lastName.compareTo(emp2.lastName);
+                return lnameResult != 0 ? lnameResult : Integer.compare(emp1.getSalary(), emp2.getSalary());
+                // return emp1.dob.compareTo(emp2.dob);
+            }
+            return 0;
+        }
+    });
+}
+```
+- a lot of Java most commn data types actually already have a method on them which we can delegate down to to make the determination of which comes first or second
+- all of this can be achieved much easier with lambdas.
+
+```java
+private static void sortEmployees(List<IEmployee> employees) {
+    // Lambda version
+      employees.sort((o1, o2) -> {
+        if (o1 instanceof Employee emp1 && o2 instanceof Employee emp2) {
+            int lnameResult = emp1.lastName.compareTo(emp2.lastName);
+            return lnameResult != 0 ? lnameResult : Integer.compare(emp1.getSalary(), emp2.getSalary());
+        }
+        return 0;
+    });
+}
+```

@@ -269,4 +269,14 @@ public interface IEmployee extends Comparable<IEmployee> {
 - they need to ideally be using the same concepts of uniqueness. 
 - If each of these duplicates results in the same hashcode with a good hashcode implementation then once one of them is stored in teh hashset then when the hashset encoutners one of these duplicates it will take that duplicates hashcode, it will determine if that hashcode already exists in its hastable, and when it finds that there is a match, it's not done yet, ut will then call the equals() method to compare the duplicate object to the object that's already in the hashtable and if they are equal then it is at that point that the hashset knows it does not need to store this duplicate, it can just ignore the duplicate.
 - So that's why it's so important for the hashcode() and equals() methods to be implemented essentially in tandem and for those methods to be used in the same philosophy.
-- If your equals method cares about firstname, lastname, dob then the hashcode method should also care about those same three fields specifically. 
+- If your equals method cares about firstname, lastname, dob then the hashcode method should also care about those same three fields specifically.
+
+---
+### LinkedHashSet
+- What if we did want the items in our Set to be in the same order in which we inserted them? So called 'Insertion Order', which is what the List interface gives us.
+- to do this change implementation of our Set from HashSet to LinkedHashSet.
+- HashSet is much quicker for accessing the elements in it. LinkedHashSet is not bad but not quite as fast as HashSet, but benefit is items come out in order.
+- But: List interface has a get() method on it, where you can get the index of an element, but the Set interface does not have those random access type methods in it. 
+- So you can get a whole Set of items out of the LinkedHashSet in insertion order, while iterating over them, but you cannot go to specific indexes as you could with the List.
+- If you wanted to do that, even thogh you were storing everthig in a Set you could create a new List temporaily and intialize it with a Set, though this is an expensive operation to do just to get 1 item, as your're effectively makign a whole other copy of that collection
+- you can always create new collections and initialize them with existing collections

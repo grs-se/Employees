@@ -113,7 +113,7 @@ public class Main {
 
     private static Set<IEmployee> populateEmployeesSet(Matcher peopleMat) {
         IEmployee employee;
-        Set<IEmployee> employees = new HashSet<>();
+        Set<IEmployee> employees = new LinkedHashSet<>();
         while (peopleMat.find()) {
             employee = Employee.createEmployee(peopleMat.group());
             employees.add(employee);

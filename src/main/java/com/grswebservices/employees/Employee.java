@@ -102,21 +102,18 @@ import java.util.regex.Pattern;
         }
     }
 
-    // compares individual fields
     @Override
     public boolean equals(Object o) {
-        // if this object points to the same memory location as that object they are equal, don't need to test anymore
         if (this == o) return true;
-        // if this other object that is being passed in for equality testing is not even of the same type as this object that I am in (Employee), then failed test.
         if (o == null || getClass() != o.getClass()) return false;
-        // by this stage we know they are of same type and so we can cast this o to the type Employee so we can start drilling into it's fields which we couldn't do as an Object
         Employee employee = (Employee) o;
-        // if all equal then return true
-        return Objects.equals(lastName, employee.lastName) && Objects.equals(firstName, employee.firstName) && Objects.equals(dob, employee.dob);
+        return Objects.equals(lastName, employee.lastName) &&
+                Objects.equals(firstName, employee.firstName) &&
+                Objects.equals(dob, employee.dob);
     }
 
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(lastName, firstName, dob);
-//    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(lastName, firstName, dob);
+    }
 }

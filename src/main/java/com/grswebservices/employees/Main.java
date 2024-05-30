@@ -9,7 +9,13 @@ public class Main {
     public static void main(String[] args) {
         String peopleText = """
             Flinstone, Fred, 1/1/1900, Programmer, {locpd=2000,yoe=10,iq=140}
-            Flinstone2, Fred2, 1/1/1900, Programmerzzzzz, {locpd=1300,yoe=14,iq=100}
+            Flinstone, Fred, 1/1/1900, Programmer, {locpd=2000,yoe=10,iq=140}
+            Flinstone, Fred, 1/1/1900, Programmer, {locpd=2000,yoe=10,iq=140}
+            Flinstone, Fred, 1/1/1900, Programmer, {locpd=2000,yoe=10,iq=140}
+            Flinstone, Fred, 1/1/1900, Programmer, {locpd=2000,yoe=10,iq=140}
+            Flinstone, Fred, 1/1/1900, Programmer, {locpd=2000,yoe=10,iq=140}
+            Flinstone, Fred, 1/1/1900, Programmerzzzzz, {locpd=2000,yoe=10,iq=140}
+            Flinstone2, Fred2, 1/1/1900, Programmer, {locpd=1300,yoe=14,iq=100}
             Flinstone3, Fred3, 1/1/1900, Programmer, {locpd=2300,yoe=8,iq=105}
             Flinstone4, Fred4, 1/1/1900, Programmer, {locpd=1630,yoe=3,iq=115}
             Flinstone5, Fred5, 1/1/1900, Programmer, {locpd=5,yoe=10,iq=100}
@@ -30,75 +36,15 @@ public class Main {
 
         int totalSalaries = 0;
         IEmployee employee = null;
-        List<IEmployee> employees = populateEmployees(peopleMat);
+        Set<IEmployee> employees = populateEmployeesSet(peopleMat);
+//        List<IEmployee> employees = populateEmployees(peopleMat);
 
-        List<String> undesirables = createUndesirablesList();
-
-        removeUndesirables(employees, undesirables);
-
-        // Additional List Methods
-        // employees.add(0, new Programmer(""));
-
-        IEmployee third = employees.get(2);
-        employees.indexOf(third);
-
-        // sometimes old libraries will require you to pass in an array of objects rather than a collection
-        // 2nd approach should be preferred as it is more type safe.
-        Object[] genericArray = employees.toArray();
-        // specify size of array
-        IEmployee[] otherArray = employees.toArray(new IEmployee[0]);
-
-//        List<IEmployee> sublist = employees.subList(0, 3);
-//        System.out.printf("sublist = %s", sublist);
-
-        // set = replace
-        employees.set(0, Employee.createEmployee("Rubble, Betty, 4/4/1915, CEO, {avgStockPrice=300}"));
-
-        // List.contains() & Object.equals()
-        IEmployee myEmp = employees.get(5);
-        System.out.println(employees.contains(myEmp)); // true
-
-        IEmployee employee1 = Employee.createEmployee("Flinstone5, Fred5, 1/1/1900, Programmer, {locpd=5,yoe=10,iq=101}");
-        System.out.println(employees.contains(employee1)); // false - duplicated an employee verbatim using the same data pamameters but we get false
-
-        System.out.println(myEmp.equals(employee1));
-
-        sortEmployeesV1(employees);
-
-        sortEmployeesV2(employees);
-
-        sortEmployeesV3(employees);
-
-//        undesirables.sort(Comparator.naturalOrder());
-        System.out.println(undesirables);
-
-//        Collections.shuffle();
-        Collections.sort(employees, Comparator.reverseOrder());
-
-//        Programmer p1 = new Programmer("");
-//        Programmer p2 = new Programmer("");
-        // default implementation of equals method compares whether p1 and p2 are both pointing to the same address in memory
-//        p1.equals(p2); // p1 == p2: equivalent - equals operator tests whether two object references point to the same address in memory, wich would mean effetcively that they are the same object
-        // however we may not want that. When we ask is p1 = to p2 what we usually actually mean is are the intrinsic and unchangeable properties of p1 actually the same, a different question to do p1 and p2 point to the same address in memory. Interesting distinction.
-        // if we do not overide the default equals method then we simply ask whether the two object point tot he same address in memory
-        // can provide own custom implementation of equals method.
-
-//        List<String> newStrings = new ArrayList<>();
-//        newStrings.addAll(undesirables);
-//        System.out.println(newStrings.size());
-//
         totalSalaries = tabulateEmployees(employees, totalSalaries);
-//
-//        NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
-//        System.out.printf("The total payout should be %s%n", currencyInstance.format(totalSalaries));
-//
-//        // RECORD VS CLASS
-//        WeirdoRecord larry = new WeirdoRecord("David", "Larry", LocalDate.of(1951, 1, 1));
-//        WeirdoClass larry2 = new WeirdoClass("David", "Larry", LocalDate.of(1951, 1, 1));
-//
-//        WeirdoRecord jake = new WeirdoRecord("Snake", "Jake");
-//        jake.sayHello();
 
+        NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
+        System.out.printf("The total payout should be %s%n", currencyInstance.format(totalSalaries));
+
+        System.out.println(employees.size());
 
     }
 
@@ -146,7 +92,7 @@ public class Main {
         return new ArrayList<>(List.of("Wilma5", "Barney4", "Fred2"));
     }
 
-    private static int tabulateEmployees(List<IEmployee> employees, int totalSalaries) {
+    private static int tabulateEmployees(Set<IEmployee> employees, int totalSalaries) {
         for (IEmployee worker: employees) {
             System.out.println(worker.toString());
             totalSalaries += worker.getSalary();
@@ -158,6 +104,16 @@ public class Main {
         IEmployee employee;
         // initialCapacity - benefit save memory, or time to prevent new array from having to be created if initial array size is too small
         List<IEmployee> employees = new ArrayList<>(16);
+        while (peopleMat.find()) {
+            employee = Employee.createEmployee(peopleMat.group());
+            employees.add(employee);
+        }
+        return employees;
+    }
+
+    private static Set<IEmployee> populateEmployeesSet(Matcher peopleMat) {
+        IEmployee employee;
+        Set<IEmployee> employees = new HashSet<>();
         while (peopleMat.find()) {
             employee = Employee.createEmployee(peopleMat.group());
             employees.add(employee);
@@ -178,6 +134,65 @@ public class Main {
         }
     }
 }
+
+///////////////////////////////////////////////////////////////
+// NOTES
+//List<String> undesirables = createUndesirablesList();
+//
+//removeUndesirables(employees, undesirables);
+//
+//// Additional List Methods
+//// employees.add(0, new Programmer(""));
+//
+//IEmployee third = employees.get(2);
+//        employees.indexOf(third);
+//
+//// sometimes old libraries will require you to pass in an array of objects rather than a collection
+//// 2nd approach should be preferred as it is more type safe.
+//Object[] genericArray = employees.toArray();
+//// specify size of array
+//IEmployee[] otherArray = employees.toArray(new IEmployee[0]);
+//
+////        List<IEmployee> sublist = employees.subList(0, 3);
+////        System.out.printf("sublist = %s", sublist);
+//
+//// set = replace
+//        employees.set(0, Employee.createEmployee("Rubble, Betty, 4/4/1915, CEO, {avgStockPrice=300}"));
+//
+//// List.contains() & Object.equals()
+//IEmployee myEmp = employees.get(5);
+//        System.out.println(employees.contains(myEmp)); // true
+//
+//IEmployee employee1 = Employee.createEmployee("Flinstone5, Fred5, 1/1/1900, Programmer, {locpd=5,yoe=10,iq=101}");
+//        System.out.println(employees.contains(employee1)); // false - duplicated an employee verbatim using the same data pamameters but we get false
+//
+//        System.out.println(myEmp.equals(employee1));
+//
+//sortEmployeesV1(employees);
+//
+//sortEmployeesV2(employees);
+//
+//sortEmployeesV3(employees);
+//
+////        undesirables.sort(Comparator.naturalOrder());
+//        System.out.println(undesirables);
+//
+////        Collections.shuffle();
+//        Collections.sort(employees, Comparator.reverseOrder());
+
+
+//        Programmer p1 = new Programmer("");
+//        Programmer p2 = new Programmer("");
+// default implementation of equals method compares whether p1 and p2 are both pointing to the same address in memory
+//        p1.equals(p2); // p1 == p2: equivalent - equals operator tests whether two object references point to the same address in memory, wich would mean effetcively that they are the same object
+// however we may not want that. When we ask is p1 = to p2 what we usually actually mean is are the intrinsic and unchangeable properties of p1 actually the same, a different question to do p1 and p2 point to the same address in memory. Interesting distinction.
+// if we do not overide the default equals method then we simply ask whether the two object point tot he same address in memory
+// can provide own custom implementation of equals method.
+
+//        List<String> newStrings = new ArrayList<>();
+//        newStrings.addAll(undesirables);
+//        System.out.println(newStrings.size());
+//
 
 //IEmployee first = employees.get(0);
 //IEmployee second = employees.get(1);

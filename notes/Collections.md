@@ -187,3 +187,34 @@ public interface IEmployee extends Comparable<IEmployee> {
 ```
 - string, dates, numeric wrapper classes - all implement Comparable - 790 classes implement Comparable
 - more algorithms for sorting, for instance Collections.shuffle();
+
+### Intro to Sets
+
+#### Lists:
+- A List is an interface that models a data structure that can hold a number of items or objects in some type of order 
+- and we can access or get those items back out with an index. 
+- Lists are all about keeping items in a list. 
+- They can grow dynamically.
+- ArrayLists, LinkedLists
+
+#### Sets:
+- models a structure that can also hold a number of items or objects however a set tries to guarantee there will be no duplicates.
+- depends on how we wrote our code
+- equals and hascode methods are more relevant with Sets
+- Three primary implementations of the Set interface in Java, we have most commonly used which is HashSet, then TreeSet and LinkedHashSet.
+- HashSet = fastest default implementation of Set
+- all of the interfaces and classes that are related to Collection have enough in common with eachother that a lot of the time you don't need to make major changes in the code if you coded wisely to begin with
+- Lists and Sets have a lot of methods that are common to eachother which is convenient
+- Sets automatically filter out duplicates if code is written properly
+- Items not comming out of loop in the order in which we added them and that is typical of the HashSet implementation of a Set. It does not guarantee a predictable order for the items that you're adding
+- The reason for that is due tot he way the HashSet actually works. HashSet associates a so-called HashCode with each item that is added into it. This HashCode in turn can be added to a mathmatical process to derive an index which is really just a number, and that index or number becoems a real number in a table.
+- a HashSet associates each item in it with a HashCode. A HashCode is really just a number htat should be fairly unique for each item that we're adding to the hashset, thoguh there can be so called collisions where two or more items result in the sam HashCode. 
+- HashCode in turn is used to generate a row number which is effectively an index and it is by these indexes that the items that have been added to the HashSet are ultimately ordered. And because that happens via the hashcode genreally speaking th order in which we add items to a hashset is not the order in which they come back out when we're iterating over it, that's ebcasue those items result in a hashcode and that hashcode results in an index and only by that index is everything ordered generally.
+- Under the hood the HashSet is actually utilizing another sturcture called a HashMap: basically a list with two columns (in this case)
+- - first column has HashCode which are also though of as a Key (key = way to look up something. A smaller simpler represnetation of the bigger thing)
+- Why do we bother with a HashCode at all? A List could just be used with just 1 column which is just the objects themselves. 
+- - the issue here is when we want to use this type of collection to do a couple of types of operations: 1 to call the contains() method.
+- - Let's say that we have an object in hand and we want to ask this collection if the object is contained within it. If we were just using a List what would generally have to happen is some code would have to iterate over each row in that List calling the equals method to detemrine if the object in hand is equal to the current object that we are iterating over and that code might have to oterate over 10000000 items, could take a while to findt he match, ssame true for the remove method. Amount of time that can is not constant. If the item you ar tying to find or remvoe is toward the end of the list then that will take longer than if it was at the beginning of the list adn you have to sit there and wait for it iterate through most of the list. 
+- - HashSet - we first determine the hashcode for the item that we have in hand, then the hashset will take that hashcode and determine an index from that hashcode, and so now the code does't need to iterate over each and every item in the collection it can just jump straight to the 10th row and then simply determine if the item in hand is equal to the item in that 1th row and if so then you've got a match and then you can say it does contain or whateber.
+- - beauty of that approach is whether you find a match on the first element or the 1000000000000 element it should take the same amount of time to find that match and so the access time is constant with a HashSet. And that's a huge advantage particularly if the collection is very large.
+

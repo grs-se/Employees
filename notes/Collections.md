@@ -218,3 +218,55 @@ public interface IEmployee extends Comparable<IEmployee> {
 - - HashSet - we first determine the hashcode for the item that we have in hand, then the hashset will take that hashcode and determine an index from that hashcode, and so now the code does't need to iterate over each and every item in the collection it can just jump straight to the 10th row and then simply determine if the item in hand is equal to the item in that 1th row and if so then you've got a match and then you can say it does contain or whateber.
 - - beauty of that approach is whether you find a match on the first element or the 1000000000000 element it should take the same amount of time to find that match and so the access time is constant with a HashSet. And that's a huge advantage particularly if the collection is very large.
 
+### Sets & HashSets
+- IDE doesn't give you the option to generate a hashcode() without an equals() or vice versa. 
+- Whenever creating a class always a good idea to generate an equals and hashcode, even toString() method as well, advice straight from godfather of Java programming Joshua Bloch,
+- not necessary to know in low level how hashcode() method is working
+- what underlying properties of this class do you want me to use to generate this hashcode, this is important because what we're trying to do wwith this hascode is to essneitalyl generate a number, in this case an itneger, that will hopefully be v unique for any combination fo propeties for an an instance of this class.
+- in the real world what would it take to hopefully ensure that any employee is unique and differentiated from other employees of a company. Generalyl speaking your not likely to have a high level of collisions if you take into accout an employees firstname, lastname and dob, there shouldbt be an lot of collisison or any at all, and so these become great properties on this particular clasto use for generating a hashcode. 
+- So ideally what we want the hascode method to do is that for the combination of properties that we care about, that we think will ensure a level of uniqueness for various instances of our class, that the hashcode method would return a unique number .
+- conversely, if you did have two isntances of any employee that did happent ot have the same firstname, lastname, dob, then definitely the hashcode for those two instances should match, otherwise we've got problems.
+
+```java
+   @Override
+    public int hashCode() {
+        return Objects.hash(lastName, firstName, dob);
+    }
+    
+    // jumps into ...
+    public static int hash(Object... values) {
+        return Arrays.hashCode(values);
+    }
+    
+    // in turn jumps into ...
+    public static int hashCode(Object[] a) {
+        if (a == null)
+            return 0;
+
+        int result = 1;
+
+        for (Object element : a)
+            // if element isn't null then calls elements own hashcode method and then adds that to a running total which is stored in 'result' and then multiplies that by 31 and then keeps doing that for each element
+            // so passing in lastname, firstname, dob, this for loop would first hit lastname, call the hashcode on the lastname, lastname is a string, so hascode method of the String class is going to get called, that will take into account all of the letters in whatever that lastname is and that will get added to the result, added to 1 because result is intialised to 1.
+            // and then whatever that result is, that will be multiplied by 31, stored in the result again, then go to firstname, get the hashcode for firstname, add that tot he running total and multply by 31, and keep gojng.
+            // result returns a fairly large number because we kept multiplying some number by 31
+            result = 31 * result + (element == null ? 0 : element.hashCode());
+
+        return result;
+    }
+```
+- never needed to generate custom hashcode.
+- try to ensure thate hashcode generated is unique and minimal number of collisions
+- if we disable hascode() method even though we are using HashSet to store employees it's behaving as the code behaved when we used a List.
+- What's happening here? some might asusme that because we got rid of the hashcode method on EMployee class that there may not be any hashcode beign generated for any of our emloyees but that is actually not the case. We are still gerating hascode for our employees however we're now using the default implementation for the hascode method.
+- all classes derive from the Object class and the Object class gives us default implemetnations of toString, equals, hashcode. The default implemtation of thehascode method actualyl gernates it's hashcode ina p arotcular way, it attempts to ensure that the hashcode should ideally return a unique value for each object. 
+- default hashcode method not looking at any properties, so instead essentially returns a randomly generated number of sufficient length to reduce collisions, and if each and ever one of the hascodes are unqiue then none of them will get filtered out.
+- default hascode implementation arguably not that useful. 
+- a Set or specificalyla HashSet is only as good at filtering duplicates out as your code allows it to be. So when you remove a meaningful implementation of the hascode from the class the hashset is no longer able to meanigfully filter out duplicates
+
+---
+- Hashcode and equals methods need to work well together, whcih is why IDE generates them together
+- they need to ideally be using the same concepts of uniqueness. 
+- If each of these duplicates results in the same hashcode with a good hashcode implementation then once one of them is stored in teh hashset then when the hashset encoutners one of these duplicates it will take that duplicates hashcode, it will determine if that hashcode already exists in its hastable, and when it finds that there is a match, it's not done yet, ut will then call the equals() method to compare the duplicate object to the object that's already in the hashtable and if they are equal then it is at that point that the hashset knows it does not need to store this duplicate, it can just ignore the duplicate.
+- So that's why it's so important for the hashcode() and equals() methods to be implemented essentially in tandem and for those methods to be used in the same philosophy.
+- If your equals method cares about firstname, lastname, dob then the hashcode method should also care about those same three fields specifically. 

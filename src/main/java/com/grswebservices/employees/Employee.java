@@ -115,8 +115,8 @@ import java.util.regex.Pattern;
         return Objects.equals(lastName, employee.lastName) && Objects.equals(firstName, employee.firstName) && Objects.equals(dob, employee.dob);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(lastName, firstName, dob);
-    }
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(lastName, firstName, dob);
+//    }
 }

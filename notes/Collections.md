@@ -551,3 +551,32 @@ public int getSalary(String firstName) {
 - .putIfAbsent() - useful method - actually ignores rows / entries if already exists, sticks with original value. behaves more like a Set. No longer overides the so called duplicates. sticks with first and ignores the rest.
 - .remove() - removes an entry from the map, pass in a key to remove entire row or the entry (removing both the key and value - can't have keys without values or values without keys really though you can have null, and it will return the value that was associated with that key.
 - .putAll() - two maps the same data types, if you wanted to merge the contents of one map to another you can use putAll() - mapA would now contain everythign that it had before plus whatever was in the other map, so merges two maps twogether. 
+
+---
+### JDK 21 Collections Changes
+- revised hierarchy of collections interfaces
+- previously we had Collection and from Collection we had Set and List, but now we have a new interface called SequencedCollection, so List is no longer extending directly from Collection.
+- for most part you may not need to memorize this though you may want to remember that SequencedCollection exists because it allows us to access the first and last index for any colections that promise to retain the order of thsoecollections
+- main thing tried to accomplish with these changes is to do a better job of acknowledging that they've got previously mostly unrelated collections that had ovelapping functionality, a linkedhasset and list are both capable of retaining the insertion order of their elemetns and so perhaps there should be a few methods that relate to insertion order that are common to both of those types and any other tpyes that behave in the same way and that was a gap existing in java prior to version 21.
+
+```java
+public class SequenceEx {
+    public static void main(String[] args) {
+        SequencedCollection<String> words = new LinkedHashSet<>(List.of(
+                "one",
+                "one",
+                "two",
+                "three",
+                "three",
+                "four",
+                "five"
+        ));
+
+        System.out.println(words.getFirst());
+        System.out.println(words);
+    }
+}
+//one
+//[one, two, three, four, five]
+
+```

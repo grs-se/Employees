@@ -580,3 +580,13 @@ public class SequenceEx {
 //[one, two, three, four, five]
 
 ```
+---
+### Wrapping Up
+- very important to have these collections classes to hold on to collections of objects when we're writign our apps.
+- where some languages may encurage you to simply use an array it is most commpn in Java to use collections, and probably most specifically lists, with the arrayList the most common implemetnation of the List interface
+- some would argue the List is overused.
+- just keep in mind that if you need to ensure that objects are unique and not duplicated  lists should probably not be your go to collection and prpbaly want to look at a Set
+- if you want to keep the objects in order you now know you could use a TreeMap or LinkedHashSet
+- List is best suited when you know you need to access individual elements perhaps randomly rather than just iterating through them in order.
+- Can remap collections: you can instantiate a List beucase most of the time you need the functionality of a List, but when you want to maek sure everythign is unique you coul wrap a list with a Set.
+- a few other collections not covered - not commonly used, such as Deques and Queues - speciality classes. List, Sets, and Maps by far the most common Collections in Java and will serve you very well, and can model pretty much any scneario using just these three interfaces and their various implementations.

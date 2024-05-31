@@ -36,8 +36,7 @@ public class Main {
 
         int totalSalaries = 0;
         IEmployee employee = null;
-        Set<IEmployee> employees = populateEmployeesSet(peopleMat);
-//        List<IEmployee> employees = populateEmployees(peopleMat);
+        Set<IEmployee> employees = populateEmployees(peopleMat);
 
         totalSalaries = tabulateEmployees(employees, totalSalaries);
 
@@ -100,20 +99,10 @@ public class Main {
         return totalSalaries;
     }
 
-    private static List<IEmployee> populateEmployees(Matcher peopleMat) {
+    private static Set<IEmployee> populateEmployees(Matcher peopleMat) {
         IEmployee employee;
-        // initialCapacity - benefit save memory, or time to prevent new array from having to be created if initial array size is too small
-        List<IEmployee> employees = new ArrayList<>(16);
-        while (peopleMat.find()) {
-            employee = Employee.createEmployee(peopleMat.group());
-            employees.add(employee);
-        }
-        return employees;
-    }
-
-    private static Set<IEmployee> populateEmployeesSet(Matcher peopleMat) {
-        IEmployee employee;
-        Set<IEmployee> employees = new LinkedHashSet<>();
+        Set<IEmployee> employees = new TreeSet<>((e1, e2) -> Integer.compare(e1.getSalary(), e2.getSalary()));
+//        Set<Employee> employees = new TreeSet<>((e1, e2) -> e1.firstName.compareTo(e2.firstName));
         while (peopleMat.find()) {
             employee = Employee.createEmployee(peopleMat.group());
             employees.add(employee);

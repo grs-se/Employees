@@ -280,3 +280,54 @@ public interface IEmployee extends Comparable<IEmployee> {
 - So you can get a whole Set of items out of the LinkedHashSet in insertion order, while iterating over them, but you cannot go to specific indexes as you could with the List.
 - If you wanted to do that, even thogh you were storing everthig in a Set you could create a new List temporaily and intialize it with a Set, though this is an expensive operation to do just to get 1 item, as your're effectively makign a whole other copy of that collection
 - you can always create new collections and initialize them with existing collections
+
+### TreeSet
+- In addition to filtering out the duplicates like all implementations of a Set are capable of doing, it will also order the items naturally, i.e. alphatbetically, but we can control it.
+
+```java
+  private static Set<IEmployee> populateEmployees(Matcher peopleMat) {
+        IEmployee employee;
+        Set<IEmployee> employees = new TreeSet<>();
+        while (peopleMat.find()) {
+            employee = Employee.createEmployee(peopleMat.group());
+            employees.add(employee);
+        }
+        return employees;
+    }
+```
+- LinkedHashSet retains the insert order
+- HashSet has almost random order - random to us
+- TreeSet has ability to not only filter items but to keep items in a so called natural ordering. THat ordering is something we can control.
+- Treeset can make use of objects that are in it that implement the Comparable interface. Comparable interface has a method on it called compareTo()
+- If our EMployee clas implements the comparable interface and therefore has the compareTo() method on it we can implement that compareTo method to cause the TreeSet to order our items howeer we see fit.
+- TreeSet internally uses a 'Tree Structure', a self-balancing binary tree, and even more specifically, a 'Red Black binary tree'.
+- that tree structure allows our items to be arranged in a tree like structure, such that individual items in that structure can be found relatively quickly without having to necessarily iteratre throguh each and every ite.
+- Binary Tree structure does permit us to cut down potentially significantly on the total number of nodes that we have to traverse in order to find the node that we're actually looking for
+- that is one of the primary benefits of the Tree Structure
+- the other benefit is the fact that the Nodes can stay in some kind of order.
+- With the default no args constructor version of the TreeSet it expects that the objects that we're addign to it are all of type Comparable, meaning that they all implement either directly or indirectly the Comparable interface, that can callt he compareTo() method to determine do I put these new nodes to the left or right of this existing Node and build that Tree Structure.
+- However there is an alternative constructor that we can use especialyl when and if our objects that we're wanting to store in it don't happen to implement the Comparable interface.
+- Overloaded version of the constructor that can take a comparator. 
+- Since the TreeSet has an overloaded constructor that is capable of taking an actualy instance of a comparator, and because the comparator interface is functional which means that it only defines one method on it, we coild actually supply a lambda expression here to implement our own comparator in a fairly constrained way.
+
+```java
+private static Set<IEmployee> populateEmployees(Matcher peopleMat) {
+    IEmployee employee;
+    Set<IEmployee> employees = new TreeSet<>((e1, e2) -> Integer.compare(e1.getSalary(), e2.getSalary()));
+    // Set<Employee> employees = new TreeSet<>((e1, e2) -> e1.firstName.compareTo(e2.firstName));
+    while (peopleMat.find()) {
+        employee = Employee.createEmployee(peopleMat.group());
+        employees.add(employee);
+    }
+    return employees;
+}
+```
+- this is quite powerful if and when you actualyl need this type of functionality to be able to sort and order the items in your list but also to filter out duplicates according to whatever abitrary definition you come up with. 
+- And even if you didn't bake that definition into a Comparable interface on the obhects that you're adding you can always just supply a comparator directly to the TreeSet, so that's quite powerful.
+---
+#### Sets Summary
+These are the three most popular implementations of the Set interface:
+- HashSet = fastest but gives unpredictable ordering
+- LinkedHashSet = almost as fast as HashSet but has added benefit of retaining the insertion order of your objects
+- TreeSet = can also filter but does so according to an ordering that you can define, either with your objects implementing the comparable interface or by supplying a comparator or Lambda that implements the compare method of the comparator.
+- So quite a lot of flexibility with filtering items with Sets.

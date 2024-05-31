@@ -331,3 +331,17 @@ These are the three most popular implementations of the Set interface:
 - LinkedHashSet = almost as fast as HashSet but has added benefit of retaining the insertion order of your objects
 - TreeSet = can also filter but does so according to an ordering that you can define, either with your objects implementing the comparable interface or by supplying a comparator or Lambda that implements the compare method of the comparator.
 - So quite a lot of flexibility with filtering items with Sets.
+---
+## Maps
+- a Map is an interface in the overall Collections framework
+- concept that Map represents is basically a table that allows us to associate objects to each other.
+- those objects will be in the form of a key value pair - one object is the key the other object is the value, you use the key to look up the value, but they're both objects
+- Maps are very common in many programming circumstances. 
+- Dictionaries: key is typically the word, and value is definition of the word - an example of functionality of a Map
+- In programming any time we want to associate two pieces of information with eaco other and especially if we have a list of those types of associations more often than not a map will be called for.
+- Environment Variables: another example of key value pairs
+- Even though the Map interface is considered to be part of the Collections framework in Java, unlike List and Set, the Map interface does not extend from the Collection interface, however because it does still store references to collections of objects it is part of the overall Java collections framework.
+- The Map interface has three most common implementations and as luck would have it those implementations mirror very closely the implementations of the Set interface so they will be very familiar:
+- - HashMap - uses a hash-key just like the Set does, and if you recall HashSet actually uses the HashMap underneath as its own implementation
+- - TreeMap - where TreeSet is able to retain a natural ordering for items in it, a TreeMap does the same thing for its entries and it does it on the keys.
+- - LinkedHashMap - capable of keeping the entries of the map (entry is a key value pair - so one row).

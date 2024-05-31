@@ -345,3 +345,41 @@ These are the three most popular implementations of the Set interface:
 - - HashMap - uses a hash-key just like the Set does, and if you recall HashSet actually uses the HashMap underneath as its own implementation
 - - TreeMap - where TreeSet is able to retain a natural ordering for items in it, a TreeMap does the same thing for its entries and it does it on the keys.
 - - LinkedHashMap - capable of keeping the entries of the map (entry is a key value pair - so one row).
+
+### A Map Scenario
+- Scenario: we want our application to allow a user to enter a fname of an employee and get the calculated salary for that employee.
+```java
+// MainTest.java
+@Test
+public void testNameToSalary() {
+    Main main = new Main();
+    main.main(new String[0]);
+    int salary = main.getSalary("Wilma");
+    assertEquals(2506,salary);
+}
+
+// Main.java
+// DON'T DO THIS!
+// tedious and time-consuming, having to iterate over whole list
+public int getSalary(String firstName) {
+    for (IEmployee employee : employees) {
+        Employee emp = (Employee) employee;
+        if (firstName.equals(emp.firstName)) {
+            return emp.getSalary();
+        }
+    }
+    return 0;
+} 
+
+// Instead populate a Map
+// Map doesn't need to iterate over whole entire list, it's very fast, especially if using the HashMap
+// HashMap creates a hash for each key and then when we supply it with a name it will regenerate that hash for the inputted name that we've given it
+
+```
+- Instead populate a Map 
+- Map doesn't need to iterate over whole entire list, it's very fast, especially if using the HashMap 
+- HashMap creates a hash for each key and then when we supply it with a name it will regenerate that hash for the inputted name that we've given it, find what index that's at, then jump straight to the index and give us the value
+---
+#### General Notes
+- TDD: think of the test as an outsider using the programme. The test itself is not part of the programme. A robot that's using the programme.
+- Can't cast any variable type to any other variable type, can only cast IEmployee as an Employee because the variable is both implementing the IEmployee interface and the Employee superclass.

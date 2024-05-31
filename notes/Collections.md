@@ -478,3 +478,76 @@ String peopleText = """
 #### General Notes
 - TDD: think of the test as an outsider using the programme. The test itself is not part of the programme. A robot that's using the programme.
 - Can't cast any variable type to any other variable type, can only cast IEmployee as an Employee because the variable is both implementing the IEmployee interface and the Employee superclass
+---
+### Additional Map Methods
+- Map.values() returns a collection of values added into the map
+- whenever we call put we are essentially adding another row of key value pairs,a table of 2 columns
+- values() method returns a collection of just the values, just the second column
+
+```java 
+System.out.println(salaryMap.values());
+// [11203000, 0, 1823000, 1935000, 565350, 8000, 6500, 3900, 3900, 7500, 7000, 2506, 2508, 2510, 2512, 2518, 1500000]
+// order is still the same as if we were printing out the key value pairs, just not seeing the keys
+```
+- .valuesOf() returns a collection - intentionally vague about what the underlying implementation of collection
+- .keySet() returns a set - very specifically a Set, because in a map the keys are v important, they have to be unique
+- Anytime you have this idea that there are no duplicates being permitted you're thinking of a Set, and that's why they make it so that if you want jsut the keys out of the map they're going to map those keys to a set, because that's the concept of no duplicates.
+```java
+System.out.println(salaryMap.keySet());
+// [Fred, N/A, Fred2, Fred3, Fred4, Fred5, Barney, Barney2, Barney3, Barney4, Barney5, Wilma, Wilma2, Wilma3, Wilma4, Wilma5, Betty]
+
+```
+- entrySet - also returns a Set but one that is more complex in terms of its generics definition. It returns a set of an Entry of String and Integer.
+```java
+public abstract java. util. Set<Map. Entry<K, V>> entrySet(); 
+```
+- Entry is a special data type that comes with Java, quite simple, think of it as a class with two properties, a property called key and a one called value.
+- Entry groups key value pairs together.
+- Why use EntrySet? sometimes you want to iterate over the entries themselves.
+
+```java
+ for (Map.Entry<String, Integer> entry : salaryMap.entrySet()) {
+            System.out.printf("Key = %s, Value= %s%n", entry.getKey(), entry.getValue());
+        }
+//Key = Fred, Value= 11203000
+//Key = N/A, Value= 0
+//Key = Fred2, Value= 1823000
+//Key = Fred3, Value= 1935000
+//Key = Fred4, Value= 565350
+//Key = Fred5, Value= 8000
+//Key = Barney, Value= 6500
+//Key = Barney2, Value= 3900
+//Key = Barney3, Value= 3900
+//Key = Barney4, Value= 7500
+//Key = Barney5, Value= 7000
+//Key = Wilma, Value= 2506
+//Key = Wilma2, Value= 2508
+//Key = Wilma3, Value= 2510
+//Key = Wilma4, Value= 2512
+//Key = Wilma5, Value= 2518
+//Key = Betty, Value= 1500000
+```
+- Entry.setValue()
+- Entry.containsKey() - true or false
+- .getOrDefault() - return salaryMap.getOrDefault(firstName, -1); try to get the value that I am passing in but if that key does not exist then just return this default value of -1 rather than returning a null which isn't handled very nicely for the application
+- .getOrDefault() = nice method, encourage to use as default method for getting data out of maps.
+```java 
+public int getSalary(String firstName) {
+    return salaryMap.getOrDefault(firstName, -1);
+}
+// equivalent to this:
+}
+ public int getSalary(String firstName) {
+    Integer value = salaryMap.get(firstName);
+    if (value == null) {
+        return -1;
+    } else {
+        return value;
+    }
+} 
+
+```
+- isEmpty() - if there are no rows of data added to the map then the isEmpty() method will return true
+- .putIfAbsent() - useful method - actually ignores rows / entries if already exists, sticks with original value. behaves more like a Set. No longer overides the so called duplicates. sticks with first and ignores the rest.
+- .remove() - removes an entry from the map, pass in a key to remove entire row or the entry (removing both the key and value - can't have keys without values or values without keys really though you can have null, and it will return the value that was associated with that key.
+- .putAll() - two maps the same data types, if you wanted to merge the contents of one map to another you can use putAll() - mapA would now contain everythign that it had before plus whatever was in the other map, so merges two maps twogether. 

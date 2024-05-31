@@ -14,4 +14,12 @@ class MainTest {
         assertEquals(2506,salary);
     }
 
+    @Test
+    public void testBadNameToSalary() {
+        Main main = new Main();
+        main.main(new String[0]);
+        int salary = main.getSalary("xxxxxxx");
+        assertEquals(-1,salary);
+    }
+
 }

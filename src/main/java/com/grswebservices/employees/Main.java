@@ -7,7 +7,8 @@ import java.util.regex.Matcher;
 public class Main {
 
     private static Set<IEmployee> employees;
-    private static Map<String, Employee> employeeMap;
+    private static Map<String, Integer> salaryMap;
+//    private static Map<String, Employee> empMap;
 
     public static void main(String[] args) {
         String peopleText = """
@@ -47,7 +48,13 @@ public class Main {
         System.out.printf("The total payout should be %s%n", currencyInstance.format(totalSalaries));
 
         System.out.println(employees.size());
-        System.out.println(employeeMap);
+//        System.out.println(empMap);
+//        System.out.println(salaryMap.values());
+//        System.out.println(salaryMap.keySet());
+        System.out.println(salaryMap.entrySet());
+        for (Map.Entry<String, Integer> entry : salaryMap.entrySet()) {
+            System.out.printf("Key = %s, Value= %s%n", entry.getKey(), entry.getValue());
+        }
 
     }
 
@@ -106,12 +113,12 @@ public class Main {
     private static Set<IEmployee> populateEmployees(Matcher peopleMat) {
         IEmployee employee;
         employees = new TreeSet<>((e1, e2) -> Integer.compare(e1.getSalary(), e2.getSalary()));
-        employeeMap = new LinkedHashMap<>();
+        salaryMap = new LinkedHashMap<>();
         while (peopleMat.find()) {
             employee = Employee.createEmployee(peopleMat.group());
             Employee emp = (Employee) employee;
             employees.add(employee);
-            employeeMap.put(emp.firstName, emp);
+            salaryMap.putIfAbsent(emp.firstName, emp.getSalary());
         }
         return employees;
     }
@@ -130,11 +137,7 @@ public class Main {
     }
 
     public int getSalary(String firstName) {
-        return employeeMap.get(firstName).getSalary();
-    }
-
-    public String getLastName(String firstName) {
-        return employeeMap.get(firstName).lastName;
+        return salaryMap.getOrDefault(firstName, -1);
     }
 }
 

@@ -379,7 +379,102 @@ public int getSalary(String firstName) {
 - Instead populate a Map 
 - Map doesn't need to iterate over whole entire list, it's very fast, especially if using the HashMap 
 - HashMap creates a hash for each key and then when we supply it with a name it will regenerate that hash for the inputted name that we've given it, find what index that's at, then jump straight to the index and give us the value
+- instead: we can create an instance of a Map and in addition to populating this employees collection we can populate the Map at the same time.
+- unlike a List which is a list of single objects, a map is a list of pairs of objects.
+- so when we are defining a map it is helpful to use generics to define what the type of the key is and the type of the value.
+- in generics can only specify classes and not primitives
+- often not good to name variables with name of data type, it can be more helpful to think of these variables in terms of what they represent, think in terms of the concepts rather than the classes.
+- in this case I will using employeeSalaryMap more conceptually rather than because of the class. I want to convey that this is a variable that will hold a mapping of one data type of one set of data to another.
+
+#### Output of HashMap
+```java
+private static Set<IEmployee> employees;
+private static Map<String, Integer> employeeSalaryMap;
+
+ private static Set<IEmployee> populateEmployees(Matcher peopleMat) {
+    IEmployee employee;
+    employees = new TreeSet<>((e1, e2) -> Integer.compare(e1.getSalary(), e2.getSalary()));
+    employeeSalaryMap = new HashMap<>();
+    while (peopleMat.find()) {
+        employee = Employee.createEmployee(peopleMat.group());
+        Employee emp = (Employee) employee;
+        employees.add(employee);
+        employeeSalaryMap.put(emp.firstName, emp.getSalary());
+    }
+    return employees;
+}
+
+public int getSalary(String firstName) {
+    return employeeSalaryMap.get(firstName);
+}
+
+// System.out.println(employeeSalaryMap);
+// key=value
+// {N/A=0, Barney=6500, Fred5=8000, Fred4=565350, Fred3=1935000, Betty=1500000, Fred2=1823000, Wilma5=2518, Wilma4=2512, Fred=2803000, Wilma3=2510, Wilma2=2508, Wilma=2506, Barney2=3900, Barney5=7000, Barney4=7500, Barney3=3900}
+// not in any easily discernible order because using HashMap, instead in order of indexing algorithm of the hashes themselves.
+```
+- now these lookups will be blazingly fast
+- Using a Map can be helpful anytime you need to do frequent lookups of data that isn't going to change very often. You can populate all that data into the map and then look things up very quickly.
+
+#### Output of TreeMap
+```java
+private static Set<IEmployee> populateEmployees(Matcher peopleMat) {
+    IEmployee employee;
+    employees = new TreeSet<>((e1, e2) -> Integer.compare(e1.getSalary(), e2.getSalary()));
+    employeeSalaryMap = new TreeMap<>();
+    while (peopleMat.find()) {
+        employee = Employee.createEmployee(peopleMat.group());
+        Employee emp = (Employee) employee;
+        employees.add(employee);
+        employeeSalaryMap.put(emp.firstName, emp.getSalary());
+    }
+    return employees;
+}
+
+// TreeMap sout() = entries are alphabetized by key, and that is controlled because the data type of key is String, String implements the Comparable interface, and so they end up in alphabetical order - pretty straight forward. 
+// {Barney=6500, Barney2=3900, Barney3=3900, Barney4=7500, Barney5=7000, Betty=1500000, Fred=2803000, Fred2=1823000, Fred3=1935000, Fred4=565350, Fred5=8000, N/A=0, Wilma=2506, Wilma2=2508, Wilma3=2510, Wilma4=2512, Wilma5=2518}
+
+```
+#### Output of LinkedHashMap
+```java
+    private static Set<IEmployee> populateEmployees(Matcher peopleMat) {
+        IEmployee employee;
+        employees = new TreeSet<>((e1, e2) -> Integer.compare(e1.getSalary(), e2.getSalary()));
+        employeeSalaryMap = new LinkedHashMap<>();
+        while (peopleMat.find()) {
+            employee = Employee.createEmployee(peopleMat.group());
+            Employee emp = (Employee) employee;
+            employees.add(employee);
+            employeeSalaryMap.put(emp.firstName, emp.getSalary());
+        }
+        return employees;
+    }
+    // Insertion Order
+    // {Fred=2803000, N/A=0, Fred2=1823000, Fred3=1935000, Fred4=565350, Fred5=8000, Barney=6500, Barney2=3900, Barney3=3900, Barney4=7500, Barney5=7000, Wilma=2506, Wilma2=2508, Wilma3=2510, Wilma4=2512, Wilma5=2518, Betty=1500000}
+```
+- Worth noting: multiple threads sort of being filtered out, however, be careful, with a Map if you try to add values to the Map and the key is already there, it won't exactly ignore the new value that you're trying to set, it will actually take the new value that you're trying to set and replace the previous ones.
+```java
+String peopleText = """
+        Flinstone, Fred, 1/1/1900, Programmer, {locpd=2000,yoe=10,iq=140}
+        Flinstone, Fred, 1/1/1900, Programmer, {locpd=4000,yoe=10,iq=140}
+        Flinstone, Fred, 1/1/1900, Programmer, {locpd=5000,yoe=10,iq=140}
+        Flinstone, Fred, 1/1/1900, Programmer, {locpd=6000,yoe=10,iq=140}
+        Flinstone, Fred, 1/1/1900, Programmer, {locpd=7000,yoe=10,iq=140}
+        Flinstone, Fred, 1/1/1900, Programmer, {locpd=8000,yoe=10,iq=140}
+""";
+```
+- What is technically happening is that the salary that is being associated with Fred is not the salary from the 1st Fred, actually salary from last Fred. In this case no distinction because all the data is the same
+- With a map when the code first propulates the map with the first Fred it does what you think it would do, it takes the firstname Fred and then takes whatever the salary is and then puts that key value pair into the map. Then we move down to the next Fred and it will see that we already have an entry in the map called Fred, but unlike a Set, it won't just ignore this and filter it out, it will take whatever value we are calculating for this next Fred and simply replace what value was there with this new one, so it does't ignore or filter it just replaces that value. Fred is a Fred is a Fred. It doesnt know or care that there are duplicates. Now this map won't allow for duplicates, we can't have multiple entries with the key of Fred, there can only be 1 entry, and by entry I mean 1 line or row, there can only be 1 entry in the map per key, and so the values will just be updated according to whatever the last value was that we tried to associate with that key. And so thats why each timet his code encounters a new Fred it will siply replaces that value in the map, it wont be ignored, so whatever the last Fred was of type Programmer, that's what youre going to get for the salary. Finalised on the last one.
+- Map is a very powerful interface, used all over the place, Whenever you need to associate a value with a key, run into these scenarios all the time. Quickly get something out, don't want to have to iterate over a whole bunch of data every single time you need to a do a lookup.
+- Anytime you need to do a simple lookup with one input resulting in one output you can use a map.
+- However, you don't have to do simple mappings, you can map just about anythign to anything: you can map the fname to the entire object.
+```java
+    private static Map<String, Employee> employeeMap;
+
+```
+
+- 
 ---
 #### General Notes
 - TDD: think of the test as an outsider using the programme. The test itself is not part of the programme. A robot that's using the programme.
-- Can't cast any variable type to any other variable type, can only cast IEmployee as an Employee because the variable is both implementing the IEmployee interface and the Employee superclass.
+- Can't cast any variable type to any other variable type, can only cast IEmployee as an Employee because the variable is both implementing the IEmployee interface and the Employee superclass

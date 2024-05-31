@@ -1,23 +1,23 @@
 package com.grswebservices.employees;
 
 import java.text.NumberFormat;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 
 public class Main {
 
     private static Set<IEmployee> employees;
+    private static Map<String, Employee> employeeMap;
 
     public static void main(String[] args) {
         String peopleText = """
             Flinstone, Fred, 1/1/1900, Programmer, {locpd=2000,yoe=10,iq=140}
-            Flinstone, Fred, 1/1/1900, Programmer, {locpd=2000,yoe=10,iq=140}
-            Flinstone, Fred, 1/1/1900, Programmer, {locpd=2000,yoe=10,iq=140}
-            Flinstone, Fred, 1/1/1900, Programmer, {locpd=2000,yoe=10,iq=140}
-            Flinstone, Fred, 1/1/1900, Programmer, {locpd=2000,yoe=10,iq=140}
-            Flinstone, Fred, 1/1/1900, Programmer, {locpd=2000,yoe=10,iq=140}
-            Flinstone, Fred, 1/1/1900, Programmerzzzzz, {locpd=2000,yoe=10,iq=140}
+            Flinstone, Fred, 1/1/1900, Programmer, {locpd=4000,yoe=10,iq=140}
+            Flinstone, Fred, 1/1/1900, Programmer, {locpd=5000,yoe=10,iq=140}
+            Flinstone, Fred, 1/1/1900, Programmer, {locpd=6000,yoe=10,iq=140}
+            Flinstone, Fred, 1/1/1900, Programmer, {locpd=7000,yoe=10,iq=140}
+            Flinstone, Fred, 1/1/1900, Programmer, {locpd=8000,yoe=10,iq=140}
+            Flinstone, Fred, 1/1/1900, Programmerzzzzz, {locpd=9000,yoe=10,iq=140}
             Flinstone2, Fred2, 1/1/1900, Programmer, {locpd=1300,yoe=14,iq=100}
             Flinstone3, Fred3, 1/1/1900, Programmer, {locpd=2300,yoe=8,iq=105}
             Flinstone4, Fred4, 1/1/1900, Programmer, {locpd=1630,yoe=3,iq=115}
@@ -47,6 +47,7 @@ public class Main {
         System.out.printf("The total payout should be %s%n", currencyInstance.format(totalSalaries));
 
         System.out.println(employees.size());
+        System.out.println(employeeMap);
 
     }
 
@@ -105,10 +106,12 @@ public class Main {
     private static Set<IEmployee> populateEmployees(Matcher peopleMat) {
         IEmployee employee;
         employees = new TreeSet<>((e1, e2) -> Integer.compare(e1.getSalary(), e2.getSalary()));
-        // Set<Employee> employees = new TreeSet<>((e1, e2) -> e1.firstName.compareTo(e2.firstName));
+        employeeMap = new LinkedHashMap<>();
         while (peopleMat.find()) {
             employee = Employee.createEmployee(peopleMat.group());
+            Employee emp = (Employee) employee;
             employees.add(employee);
+            employeeMap.put(emp.firstName, emp);
         }
         return employees;
     }
@@ -127,13 +130,11 @@ public class Main {
     }
 
     public int getSalary(String firstName) {
-        for (IEmployee employee : employees) {
-            Employee emp = (Employee) employee;
-            if (firstName.equals(emp.firstName)) {
-                return emp.getSalary();
-            }
-        }
-        return 0;
+        return employeeMap.get(firstName).getSalary();
+    }
+
+    public String getLastName(String firstName) {
+        return employeeMap.get(firstName).lastName;
     }
 }
 

@@ -340,3 +340,92 @@ private static void sumSalaries(String peopleText) {
 - turns it intoa template, avoid boilerplate, allows us to think about just the bits we need to think about which is just the field, and then the comparing method spits back out an instance of a comparator which can be plugged intot he sorted methd.
 - much more readable code - more beautiful when using the Streams API.
 - not so foucssed on how to write that coed to extract these things and instead just focussed on what we want to do, more declarative - we're declaring what we want to do but not how to do it - and this is more typical of functional programming.
+
+### Filtering with Streams
+- the definition of a duplicate tends to be predicated on the way that the objects have been coded in terms of their equals and hashcode methods, especially getting rid of duplicates by storing objcets in a Set and effectively what ends up happing their is each obect thtat goes into the Set has a hashcode and the set has the ability to check that hashcode and filter out any objects whose hashcode matches with objects that are already in their, and then it also calls teh equals method too to really make sure.
+- Similar things we can do here without even having to put aything into a Set necessarily. 
+- .distinct()// Returns a stream consisting of the distinct elements (according to Object. equals(Object)) of this stream.
+- duplicates are defined by however oru equals method is implemented 
+
+```java
+    private static void sumSalaries(String peopleText) {
+    int sum = peopleText
+            .lines()
+            .map(Employee::createEmployee)
+            .map(e -> (Employee)e) // cast as Employee
+            .distinct()// Returns a stream consisting of the distinct elements (according to Object. equals(Object)) of this stream.
+            .sorted(comparing(Employee::getLastName) // (x,y) -> x.getLastName().compareTo(y.getLastName())
+                    .thenComparing(Employee::getFirstName)
+                    .thenComparingInt(Employee::getSalary))
+            .mapToInt(StreamsStuff::showEmpAndGetSalary)
+            .sum();
+    System.out.println(sum);
+}
+// duplicates are defined by however the equals method is implemented
+// based on lname, fname, and dob, if those 3 fields are the same between any 2 or more objects then you've got duplicates
+ @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return Objects.equals(lastName, employee.lastName) &&
+                Objects.equals(firstName, employee.firstName) &&
+                Objects.equals(dob, employee.dob);
+    }
+```
+- Can also use a Set() so do the same thing. Collect them into a List, a Set
+- .collect() is a terminal operation meaning it is usually used at the end
+```java
+private static void streamPractice(String peopleText) {
+    int sum = peopleText
+            .lines()
+            .map(Employee::createEmployee)
+            .map(e -> (Employee)e) // cast as Employee
+            .collect(Collectors.toSet()) // Set<Employee>
+            .stream()// have to convert back to Stream after toSet()
+            // .distinct()// Returns a stream consisting of the distinct elements (according to Object. equals(Object)) of this stream.
+            .sorted(comparing(Employee::getLastName) // (x,y) -> x.getLastName().compareTo(y.getLastName())
+                    .thenComparing(Employee::getFirstName)
+                    .thenComparingInt(Employee::getSalary))
+            .mapToInt(StreamsStuff::showEmpAndGetSalary)
+            .sum();
+    System.out.println(sum);
+}
+// Would normally use collect at the end, but not wrong or right.
+private static void setOfEmployees(String peopleText) {
+    Set<Employee> empSet = peopleText
+            .lines()
+            .map(Employee::createEmployee)
+            .map(e -> (Employee)e) // cast as Employee
+            .collect(Collectors.toSet()); // Set<Employee>
+    System.out.println(empSet);
+}
+```
+- .filter() takes what iscalled a predicate - a predicate is another functional interface that has one abstract method defined on it adn that method returns a true of false.
+- returns true or false because usually its implemented by a lambda expression in order to decide what object should or should not get filtered out of a stream.
+```java
+private static void streamPractice(String peopleText) {
+    int sum = peopleText
+            .lines()
+            .map(Employee::createEmployee)
+            .map(e -> (Employee)e) // cast as Employee
+            .filter(not(e -> e.getLastName().equals("N/A"))) // filter out Programmerzzzzz
+            .collect(Collectors.toSet()) // Set<Employee> - terminal operation
+            .stream()// have to convert back to Stream after toSet()
+            // .distinct()// Returns a stream consisting of the distinct elements (according to Object. equals(Object)) of this stream.
+            .sorted(comparing(Employee::getLastName) // (x,y) -> x.getLastName().compareTo(y.getLastName())
+                    .thenComparing(Employee::getFirstName)
+                    .thenComparingInt(Employee::getSalary))
+            .mapToInt(StreamsStuff::showEmpAndGetSalary)
+            .sum();
+    System.out.println(sum);
+} 
+```
+#### Benefits of Streams API
+- Streams API has a lot of power and benefits:
+- Streams API is so easy
+- Streams API is also highly optimized, faster than traditional way, Java gets a much better opportunity to optimize the code before it executes
+- Much more readable, easier to maintain, actually runs faster
+- also opens up our code for the ability to take full advtantage of multiple processing cores on the computer so that we can actually process data in parallel streams simultaneously, and we don't have to be experts in multi-processing and what it takes to do all that, Streams API makes it extremely easy for us to do this without much understanding.
+- Streams API has a lot of power and benefits in a lot of cases, espeically cases where you have a lot of data that you need to sift through and relate in various ways, convert into some oher form, or filter out, or do a lot of comobinations of those sorts of things.
+- 

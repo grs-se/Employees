@@ -4,13 +4,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Set;
 import java.util.Collection;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.Comparator.comparing;
+import static java.util.function.Predicate.not;
 
 public class StreamsStuff {
 
@@ -57,22 +59,37 @@ public class StreamsStuff {
 //
 //        arrayStream();
 
-        sumSalaries(peopleText);
+        streamPractice(peopleText);
 
     }
 
-    private static void sumSalaries(String peopleText) {
+    private static void streamPractice(String peopleText) {
         int sum = peopleText
                 .lines()
                 .map(Employee::createEmployee)
-                .map(e -> (Employee)e)// cast as Employee
+                .map(e -> (Employee)e) // cast as Employee
+                .filter(not(e -> e instanceof Programmer)) // everyone except Programmers
+                .filter(not(e -> e.getLastName().equals("N/A"))) // filter out N/A
+                .filter(e -> e.getSalary() > 5000)
+                .filter(e -> e.getSalary() < 10000)
+                .collect(Collectors.toSet()) // Set<Employee> - terminal operation
+                .stream()// have to convert back to Stream after toSet()
+                // .distinct()// Returns a stream consisting of the distinct elements (according to Object. equals(Object)) of this stream.
                 .sorted(comparing(Employee::getLastName) // (x,y) -> x.getLastName().compareTo(y.getLastName())
                     .thenComparing(Employee::getFirstName)
-                    .thenComparingInt(Employee::getSalary)
-                    .reversed())
+                    .thenComparingInt(Employee::getSalary))
                 .mapToInt(StreamsStuff::showEmpAndGetSalary)
                 .sum();
         System.out.println(sum);
+    }
+
+    private static void setOfEmployees(String peopleText) {
+        Set<Employee> empSet = peopleText
+                .lines()
+                .map(Employee::createEmployee)
+                .map(e -> (Employee)e) // cast as Employee
+                .collect(Collectors.toSet()); // Set<Employee> - terminal operation
+        System.out.println(empSet);
     }
 
     private static int showEmpAndGetSalary(IEmployee emp) {

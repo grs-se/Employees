@@ -178,3 +178,88 @@ private static void tabulateEmployees(String peopleText) {
     }
 
 ```
+---
+```java
+        try {
+            Files.lines(Path.of("C:\\Users\\georg\\IdeaProjects\\Employees\\src\\main\\java\\com\\grswebservices\\employees\\employees.txt"))
+                    .forEach(System.out::println);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+```
+---
+### Summing with Streams
+- Map method allows us to convert streams of one type to streams of another type
+
+```java
+// NOT VALID   
+private static void getSalaries(String peopleText) {
+        peopleText
+                .lines()
+                .map(Employee::createEmployee) // Stream<IEmployee>
+                .map(Employee::getSalary) // yet we're calling the getSalary method of the Employee class, not referencing getSalary method declared on IEmployee interface
+                .forEach(System.out::println);
+    }
+
+// VALID
+private static void getSalaries(String peopleText) {
+    peopleText
+            .lines()
+            .map(Employee::createEmployee)
+            .map(IEmployee::getSalary)
+            .forEach(System.out::println);
+}
+
+
+```
+- mapToInt() - returns an IntStream
+- sum() is also a terminal operation meaning we cannot finish with both sum and forEach
+- Streams gets heavy into functional programming
+```java
+private static void sumSalaries(String peopleText) {
+    int sum = peopleText
+            .lines()
+            .map(Employee::createEmployee)
+            .mapToInt(Employee::getSalary)// Non-static method cannot be referenced from a static context
+//            .mapToInt(IEmployee::getSalary)
+            .sum();
+    System.out.println(sum);
+} 
+```
+- why you can't reference the getSalary method on the EMployee class in this case, because objects coming out of map are of type IEmployee and that makes the streams api think that it needs to call a static method called getSalary because IEmployee doesnt match Employee. 
+- calls the getSalary method individually on each of these obkects because they're instances, whereas if its thinking that hte getSalary method is a static method, it's not going to call the getSalary method on the individual instances, instead it's going to try to call a static getSalary methd, and there is no static getSalary method, and thus we get this error.
+- Java and the Streams API are trying ot be super smart to figure out when we pass in this method references what should it actually do.
+- complex ways in which Java can map data from one stage in pipeline to next
+
+```java
+ private static void sumSalaries(String peopleText) {
+        int sum = peopleText
+                .lines()
+                .map(Employee::createEmployee)
+                .mapToInt((IEmployee emp) -> {
+                    System.out.println(emp);
+                    return emp.getSalary();
+                })
+                .sum();
+        System.out.println(sum);
+    }
+    
+// Can be replaced with nice readable pipeline using Streams API
+private static void sumSalaries(String peopleText) {
+    int sum = peopleText
+            .lines()
+            .map(Employee::createEmployee)
+            .mapToInt(StreamsStuff::showEmpAndGetSalary)
+            .sum();
+    System.out.println(sum);
+}
+
+private static int showEmpAndGetSalary(IEmployee emp) {
+    System.out.println(emp);
+    return emp.getSalary();
+}
+
+```
+- In this case it is a static reference, because showEmp... is a static method and also Java is recogniseing that th einput is of type IEmployee so those data types are matching
+- now covered most of the functionality of the revious implemetnation excpet tthe number formating but that is not related to streams API
+- 

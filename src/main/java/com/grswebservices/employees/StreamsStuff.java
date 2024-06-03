@@ -39,14 +39,9 @@ public class StreamsStuff {
                 Rubble, Betty, 4/4/1915, CEO, {avgStockPrice=300}
                 """;
 
-        try {
-            Files.lines(Path.of("C:\\Users\\georg\\IdeaProjects\\Employees\\src\\main\\java\\com\\grswebservices\\employees\\employees.txt"))
-                    .forEach(System.out::println);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        absoluteFileStream();
 
-//        tabulateEmployees(peopleText);
+        tabulateEmployees(peopleText);
 
 //        streamsPractice1();
 //
@@ -59,6 +54,31 @@ public class StreamsStuff {
 //
 //        arrayStream();
 
+        sumSalaries(peopleText);
+
+    }
+
+    private static void sumSalaries(String peopleText) {
+        int sum = peopleText
+                .lines()
+                .map(Employee::createEmployee)
+                .mapToInt(StreamsStuff::showEmpAndGetSalary)
+                .sum();
+        System.out.println(sum);
+    }
+
+    private static int showEmpAndGetSalary(IEmployee emp) {
+        System.out.println(emp);
+        return emp.getSalary();
+    }
+
+    private static void absoluteFileStream() {
+        try {
+            Files.lines(Path.of("C:\\Users\\georg\\IdeaProjects\\Employees\\src\\main\\java\\com\\grswebservices\\employees\\employees.txt"))
+                    .forEach(System.out::println);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void arrayStream() {

@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.Collection;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static java.util.Comparator.comparing;
 
 public class StreamsStuff {
 
@@ -41,7 +44,7 @@ public class StreamsStuff {
 
 //        absoluteFileStream();
 
-        tabulateEmployees(peopleText);
+//        tabulateEmployees(peopleText);
 
 //        streamsPractice1();
 //
@@ -62,6 +65,11 @@ public class StreamsStuff {
         int sum = peopleText
                 .lines()
                 .map(Employee::createEmployee)
+                .map(e -> (Employee)e)// cast as Employee
+                .sorted(comparing(Employee::getLastName) // (x,y) -> x.getLastName().compareTo(y.getLastName())
+                    .thenComparing(Employee::getFirstName)
+                    .thenComparingInt(Employee::getSalary)
+                    .reversed())
                 .mapToInt(StreamsStuff::showEmpAndGetSalary)
                 .sum();
         System.out.println(sum);

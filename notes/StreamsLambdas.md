@@ -262,4 +262,81 @@ private static int showEmpAndGetSalary(IEmployee emp) {
 ```
 - In this case it is a static reference, because showEmp... is a static method and also Java is recogniseing that th einput is of type IEmployee so those data types are matching
 - now covered most of the functionality of the revious implemetnation excpet tthe number formating but that is not related to streams API
-- 
+---
+## Sorting with Streams
+- .sorted() - only works properly because Employee class is implementing Comparable
+
+```java
+// Sorted by Salary
+private static void sumSalaries(String peopleText) {
+    int sum = peopleText
+            .lines()
+            .map(Employee::createEmployee)
+            .sorted((x,y) -> Integer.compare(x.getSalary(), y.getSalary()))
+            .mapToInt(StreamsStuff::showEmpAndGetSalary)
+            .sum();
+    System.out.println(sum);
+}
+// IDE suggests converting to this...
+private static void sumSalaries(String peopleText) {
+    int sum = peopleText
+            .lines()
+            .map(Employee::createEmployee)
+            .sorted(Comparator.comparingInt(IEmployee::getSalary))
+            .mapToInt(StreamsStuff::showEmpAndGetSalary)
+            .sum();
+    System.out.println(sum);
+}
+
+```
+- Comparator.comparing() - key reference, pass in a method reference to a method that returns a field that we want to sort by
+
+```java
+private static void sumSalaries(String peopleText) {
+    int sum = peopleText
+            .lines()
+            .map(Employee::createEmployee)
+            .map(e -> (Employee)e)// cast as Employee
+            .sorted(comparing(Employee::getLastName) // (x,y) -> x.getLastName().compareTo(y.getLastName())
+                    .thenComparing(Employee::getFirstName)
+                    .thenComparingInt(Employee::getSalary)
+                    .reversed())
+            .mapToInt(StreamsStuff::showEmpAndGetSalary)
+            .sum();
+    System.out.println(sum);
+}
+
+    // sorted alphabetically and then by salary
+//Flinstone, Fred: £2,803,000.00 - £3,083,300.00
+//Flinstone, Fred: £5,603,000.00 - £6,163,300.00
+//Flinstone, Fred: £7,003,000.00 - £7,703,300.00
+//Flinstone, Fred: £8,403,000.00 - £9,243,300.00
+//Flinstone, Fred: £9,803,000.00 - £10,783,300.00
+//Flinstone, Fred: £11,203,000.00 - £12,323,300.00
+//Flinstone, Wilma: £2,506.00 - £2,756.60
+//Flinstone2, Fred2: £1,823,000.00 - £2,005,300.00
+//Flinstone2, Wilma2: £2,508.00 - £2,758.80
+//Flinstone3, Fred3: £1,935,000.00 - £2,128,500.00
+//Flinstone3, Wilma3: £2,510.00 - £2,761.00
+//Flinstone4, Fred4: £565,350.00 - £621,885.00
+//Flinstone4, Wilma4: £2,512.00 - £2,763.20
+//Flinstone5, Fred5: £8,000.00 - £8,800.00
+//Flinstone5, Wilma5: £2,518.00 - £2,769.80
+//N/A, N/A: £0.00 - £0.00
+//Rubble, Barney: £6,500.00 - £7,150.00
+//Rubble, Betty: £1,500,000.00 - £1,650,000.00
+//Rubble2, Barney2: £3,900.00 - £4,290.00
+//Rubble3, Barney3: £3,900.00 - £4,290.00
+//Rubble4, Barney4: £7,500.00 - £8,250.00
+//Rubble5, Barney5: £7,000.00 - £7,700.00
+//        50690704
+
+
+```
+- by default the natural ordering that we get from computers is not actually what we humans would normally consider to be natural at all in the sense that the number 10 expressed as a string would actualyl become before the number 2, because the 1 in the 10 becomes before the 2, and so that ordering isnt natural.
+- however if we use the numerical aware versions of the comparing methods then they will sort in what humans consdier to be a more natural orering:
+- thenComparingInt() - 
+- how is comparing method actually working? the sorted method takes an input simply the Comparator, so what this static comparing method does is it builds a comparing method for us,
+- turns it intoa template, avoid boilerplate, allows us to think about just the bits we need to think about which is just the field, and then the comparing method spits back out an instance of a comparator which can be plugged intot he sorted methd.
+- much more readable code - more beautiful when using the Streams API.
+- not so foucssed on how to write that coed to extract these things and instead just focussed on what we want to do, more declarative - we're declaring what we want to do but not how to do it - and this is more typical of functional programming.

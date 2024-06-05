@@ -3,10 +3,7 @@ package com.grswebservices.employees;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Collection;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -64,9 +61,54 @@ public class StreamsStuff {
 
 //        flattenStreamsOfStreams(peopleText);
 
-        alternativesToFilter(peopleText);
+//        alternativesToFilter(peopleText);
+
+        mapReducePattern(peopleText);
+
+        reduceNonNumericValues();
 
 
+    }
+
+    private static void reduceNonNumericValues() {
+        Optional<String> output = Stream.of("tom", "jerry", "mary", "sam")
+                // reduce down to one concatenated string
+                .reduce((a, b) -> a.concat("_").concat(b).toUpperCase());
+        System.out.println(output.orElse(""));
+    }
+
+    private static void mapReducePattern(String peopleText) {
+        Predicate<Employee> dummyEmployeeSelector = employee -> "N/A".equals(employee.getLastName());
+        Predicate<Employee> overFiveKSelector = e -> e.getSalary() > 5000;
+        Predicate<Employee> noDummiesAndOverFiveK = dummyEmployeeSelector.negate().and(overFiveKSelector);
+        OptionalInt result = peopleText
+                .lines()
+                .map(Employee::createEmployee)
+                .map(e -> (Employee)e)
+                .filter(noDummiesAndOverFiveK)
+                .collect(Collectors.toSet())
+                .stream()
+                .sorted(comparing(Employee::getLastName)
+                        .thenComparing(Employee::getFirstName)
+                        .thenComparingInt(Employee::getSalary))
+                .skip(5)
+                .mapToInt(StreamsStuff::showEmpAndGetSalary)
+                // Reduce Methods
+                // Min Salary
+                // .reduce(Math::min);
+                // Max salary with reduce
+                // .reduce(150000, (a,b) -> a < b ? a : b);
+                // .reduce(Math::max);
+                // .reduce((a, b) -> Math.max(a, b));
+                 .reduce((a, b) -> a > b ? a : b);
+                // .reduce(0, (a, b) -> a + b);
+                // .count();
+                // .max(); // find max salary in string
+                // .min();
+                // .average(); // determines the number of items (in this case integers) that are coming out of mapToInt stream and also determining the sum and then dividing those to get the average
+
+        System.out.println(result.orElse(-1));
+//        System.out.println(result.orElse(0));
     }
 
     private static void flattenStreamsOfStreams(String peopleText) {
@@ -89,7 +131,7 @@ public class StreamsStuff {
                 .map(Employee::createEmployee)
                 .map(e -> (Employee) e)
                 .filter(dummySelector.negate())
-                .findAny()
+                .findAny();
 //                .findFirst();
         System.out.println(optionalEmployee // If there is an employee then get the first name out
                 .map(Employee::getFirstName)

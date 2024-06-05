@@ -470,22 +470,79 @@ private static void alternativesToFilter(String peopleText) {
             .map(Employee::createEmployee)
             .map(e -> (Employee) e)
             .filter(dummySelector.negate())
-            .findFirst();
+            .findAny()
+//                .findFirst();
     System.out.println(optionalEmployee // If there is an employee then get the first name out
             .map(Employee::getFirstName)
             .orElse("Nobody")); // otherwise return nobody
-      /*
+//                .noneMatch(e -> e.getSalary() < 0);
+//                .anyMatch(e -> e.getSalary() > 10000000);
+//                .allMatch(e -> e.getSalary() > 2500);
+
+        /*
         if (employee != null) {
             System.out.println(employee.getFirstName());
         } else {
             System.out.println("Nobody");
         }
-      */
-    
-//                .noneMatch(e -> e.getSalary() < 0);
-//                .anyMatch(e -> e.getSalary() > 10000000);
-//                .allMatch(e -> e.getSalary() > 2500);
+         */
 }
 ```
 - differnece between findAny and findFirst is to do with how the Streams API handles the ordering within and how it can optimize how to float through the streams depending on whether we care about the order or not
 - More of an impact if you are using the streams API to do parallel processing where we allow multiple processors or cores within a computer to execute a pipeline concurrently or at the samet time. In that scenario, if we're using findAny it doesnt matter which one we find that satisfies the predicate even across multiple processors
+---
+### The MapReduce Pattern
+- The Map Reduce pattern is a very commonly used pattern in functional programming to allow developers to take large amounts of data and sift through it and reduce it down to its essence or a summary.
+- An example: we wrote a pipeline to process our employees and total up their salaries. The sum function was the reduce function. 
+- Many other things we can do with the map reduce pattern besides summing up grand total of objects, we can count the num of objects, total, maxValue, minValue, and also doesnt only apply to numerical summaries - can use other types of data as long as the end goal is to summarise or condense the data down.
+- a number of additional methods besides jsut the sum for reducing.
+
+```java
+    private static void mapReducePattern(String peopleText) {
+        Predicate<Employee> dummyEmployeeSelector = employee -> "N/A".equals(employee.getLastName());
+        Predicate<Employee> overFiveKSelector = e -> e.getSalary() > 5000;
+        Predicate<Employee> noDummiesAndOverFiveK = dummyEmployeeSelector.negate().and(overFiveKSelector);
+        OptionalDouble result = peopleText
+                .lines()
+                .map(Employee::createEmployee)
+                .map(e -> (Employee)e)
+                .filter(noDummiesAndOverFiveK)
+                .collect(Collectors.toSet())
+                .stream()
+                .sorted(comparing(Employee::getLastName)
+                        .thenComparing(Employee::getFirstName)
+                        .thenComparingInt(Employee::getSalary))
+                .skip(5)
+                .mapToInt(StreamsStuff::showEmpAndGetSalary)
+                // Reduce 
+                .average(); // determines the number of items (in this case integers) that are coming out of mapToInt stream and also determining the sum and then dividing those to get the average
+        
+        System.out.println(result.orElse(0));
+    }
+
+```
+- .reduce() function is a lower level function
+  - takes an int binary
+- .reduce(0, (a, b) -> a + b) - 0 = identity - plugs it in to a, then takes first number and plugs that into b, then takes two values 0 + 10, then takes that result = 10, and calls the lambda expression again, but this time calls int her esult of the previous iteration which is 10 and plugs that in to a, then takes next value in stream which is 9, and then executes the lamdba which is to add thse whcih is 19,
+- the operation we're doing is pluggable - what operation are we providing between a and b, all the rest is boilerplate, doing something with those 2 values and doing somehting with those values and the result of that is going to be plugged back in as one of the 2 values for the next cycle.
+- the identity is a starting value, for a given operation an identity will give you whatever value you are plugging in for that very first iteration
+- because we're passing in the identity it should not be possbile to return null 
+- there is an overloaded version of reduce which doesn't require an identity - this simply takes the first value in the list and then each subsequent iteration takes in where the last iteration took off
+- has a side effect - 
+- pretty much any method that takes a lambda will also take a method reference
+- reduce functions used for more than just numbers
+- as long as we're taking the list of things and spitting out one combined or summarised output
+
+```java
+private static void reduceNonNumericValues() {
+  Optional<String> output = Stream.of("tom", "jerry", "mary", "sam")
+          // reduce down to one concatenated string
+          .reduce((a, b) -> a.concat("_").concat(b));
+  System.out.println(output.orElse(""));
+}
+```
+- what happens if only one value?
+- proves that when we don't supply an identity, that very first iterationt hat the reduce fucntion is going to do simply takes that first value in.
+- Map Reduce pattern can be highly effective when needing to process large amounts of data. 
+- Popular because can easily be parallelized, can process lots of data across multiple processors.
+- a large list of 1 billion items can be segmented into groupings depending on how many processors available and each processor has its own groupings and sum up whatever property and reduce down to one value on that processor and other processors do the same and then all of their values get summed up togehter as well and then you've got the grand total value - presumambly in 1/10 of the time if 10 processors.

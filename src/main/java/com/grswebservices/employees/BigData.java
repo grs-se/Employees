@@ -11,13 +11,18 @@ import java.util.stream.Stream;
 public class BigData {
     public static void main(String[] args) throws IOException {
         try {
-            Long result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
-                    .limit(2) // limit processing of lines to 2
+            long startTime = System.currentTimeMillis();
+            Long result = Files.lines(Path.of("E:\\Java\\Hr5m.csv")).parallel()
                     .skip(1) // skip header row
-                    .collect(Collectors.counting());
-//                    .count()
-//                    .collect(Collectors.toList());
-            System.out.println(result);
+//                            .limit(10) // limit lines because file has 5 million records
+                    .map(s -> s.split(","))
+                    .map(arr -> arr[25]) // index 25 = salary field
+                    .mapToLong(Long::parseLong)
+                    .sum();
+//                    .collect(Collectors.summingLong(Long::parseLong));
+            long endTime = System.currentTimeMillis();
+            System.out.printf("$%,d.00%n", result);
+            System.out.println(endTime - startTime);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

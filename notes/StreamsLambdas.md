@@ -576,3 +576,105 @@ public class BigData {
 ```
 - difference between .count() and .collect() - .collect is an entire framework to enable us to do powerful query type things with the streams api. all kinds of capabilities that have been implemented ina fairly generic type of way in an interface whereas the .count method and many of the other temrinal methods in the streams API are more purpose built, so in some cases they might actually be more effciient.
 - some things that you can only do with the .collect() method that you can;t do in any other way.
+
+---
+### Big Data Summing
+#### Process of real world programming:
+- In programming think of the end goal first and then work back from there. 
+- So let's say the end result should be a really big number, so how do I get that from whatever the starting thing is?
+- we want to be able to isolate out these values programmatically
+- the nature of these lines is that they are text not numbers, we can't do math on strings
+- so we need to seperate out the salary
+- we know that the salary will be text so we need to convert some text to numbers
+- if you can't eyeball the data can be v helpful to paste it into a spreadsheet and seperate it out 
+- we know the .lines() method returns a stream of string so we know fundamentally what we are dealing with is strings.
+- So the first step we need to take each of these lines of text and break them apart into fields according to the commas
+- Here's another aspect of being a real-world programmer: you're gojng to have to remember not the details of how to do each and eveyr thing, but you will have to be able to remember genreally peaking what can be done, what kinds of operations are possible.
+- Dont have to remember waht that method is called but that there is some kind of method available - and then google it
+- You could think of each row as 1 array, and each element in the array is each cell, and that allows us to seperate out the individual parts and access the elemenets of the arrayvery easily
+- to convert one data type to another data type we use the .map() method, that's what it does.
+- a map function is simple an interface that defines one method on it and method takes one input and returns one output
+
+```java
+// return type of .collect() method is highly dynamic, it's based on the return type of the internal Collector
+public abstract <R, A> R collect(     java. util. stream. Collector<? super T, A, R> collector )
+```
+
+```java
+// WARNING: This file has 5 million records.
+public class BigData {
+  public static void main(String[] args) throws IOException {
+    try {
+      long startTime = System.currentTimeMillis();
+      Long result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+              .skip(1) // skip header row
+//                            .limit(10) // limit lines because file has 5 million records
+              .map(s -> s.split(","))
+              .map(arr -> arr[25]) // index 25 = salary field
+              .collect(Collectors.summingLong(Long::parseLong));
+      long endTime = System.currentTimeMillis();
+      System.out.printf("$%,d.00%n", result);
+      System.out.println(endTime - startTime);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+}
+
+// $599,962,473,668.00
+// 18182
+// VS:
+
+public class BigData {
+  public static void main(String[] args) throws IOException {
+    try {
+      long startTime = System.currentTimeMillis();
+      Long result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+              .skip(1) // skip header row
+//                            .limit(10) // limit lines because file has 5 million records
+              .map(s -> s.split(","))
+              .map(arr -> arr[25]) // index 25 = salary field
+              .mapToLong(Long::parseLong)
+              .sum();
+//                    .collect(Collectors.summingLong(Long::parseLong));
+      long endTime = System.currentTimeMillis();
+      System.out.printf("$%,d.00%n", result);
+      System.out.println(endTime - startTime);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+}
+//$599,962,473,668.00
+//18180
+```
+- barely any difference in speed between two implementations.
+- Java manages parallel processing for us magically 
+- by just using on littl ekeyword here we are able to cut the processing time by more than half (doesn't work on my computer! - twice as long!!)
+
+```java
+public class BigData {
+    public static void main(String[] args) throws IOException {
+        try {
+            long startTime = System.currentTimeMillis();
+            Long result = Files.lines(Path.of("E:\\Java\\Hr5m.csv")).parallel()
+                    .skip(1) // skip header row
+//                            .limit(10) // limit lines because file has 5 million records
+                    .map(s -> s.split(","))
+                    .map(arr -> arr[25]) // index 25 = salary field
+                    .mapToLong(Long::parseLong)
+                    .sum();
+//                    .collect(Collectors.summingLong(Long::parseLong));
+            long endTime = System.currentTimeMillis();
+            System.out.printf("$%,d.00%n", result);
+            System.out.println(endTime - startTime);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+// Took almost twice as long with parallel processing!!! 
+// 38667
+
+
+```

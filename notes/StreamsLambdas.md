@@ -428,4 +428,23 @@ private static void streamPractice(String peopleText) {
 - Much more readable, easier to maintain, actually runs faster
 - also opens up our code for the ability to take full advtantage of multiple processing cores on the computer so that we can actually process data in parallel streams simultaneously, and we don't have to be experts in multi-processing and what it takes to do all that, Streams API makes it extremely easy for us to do this without much understanding.
 - Streams API has a lot of power and benefits in a lot of cases, espeically cases where you have a lot of data that you need to sift through and relate in various ways, convert into some oher form, or filter out, or do a lot of comobinations of those sorts of things.
-- 
+
+### Flattening Streams of Streams
+- flatMap
+- anytime you have a situation with the Streams API where you end up with a stream of streams that's probably not what you wanted in many cases and you want to flatten that structure into one stream, and that is what the flatMap does.
+```java
+    private static void employeeStreamPractice(String peopleText) {
+        peopleText
+                .lines()
+                .map(Employee::createEmployee)
+                .map(e -> (Employee) e)
+                .map(Employee::getFirstName)
+                .map(firstName -> firstName.split(""))
+                .flatMap(Arrays::stream) // flattens redundant child streams into one super stream with whatever the original contents were emdedded
+                .map(String::toLowerCase)
+                .distinct() // get rid of duplicate letters
+                .forEach(System.out::print);
+    }
+    // fredn/a2345bywilmt
+
+```

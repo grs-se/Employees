@@ -59,18 +59,39 @@ public class StreamsStuff {
 //
 //        arrayStream();
 
-        streamPractice(peopleText);
+//        streamsPractice(peopleText);
+
+        employeeStreamPractice(peopleText);
+
 
     }
 
-    private static void streamPractice(String peopleText) {
-        int sum = peopleText
+    private static void employeeStreamPractice(String peopleText) {
+        peopleText
                 .lines()
                 .map(Employee::createEmployee)
+                .map(e -> (Employee) e)
+                .map(Employee::getFirstName)
+                .map(firstName -> firstName.split(""))
+                .flatMap(Arrays::stream) // flattens redundant child streams into one super stream with whatever the original contents were emdedded
+                .map(String::toLowerCase)
+                .distinct() // get rid of duplicate letters
+                .forEach(System.out::print);
+    }
+
+    private static void streamsPractice(String peopleText) {
+        Predicate<Employee> dummyEmployeeSelector = employee -> "N/A".equals(employee.getLastName());
+        Predicate<Employee> overFiveKSelector = e -> e.getSalary() > 5000;
+        Predicate<Employee> noDummiesAndOverFiveK = dummyEmployeeSelector.negate().and(overFiveKSelector);
+        int sum = peopleText
+                .lines()
+                // .filter(((Predicate<String>) s -> s.contains("Programmerzzzzz")).negate())
+                .map(Employee::createEmployee)
                 .map(e -> (Employee)e) // cast as Employee
+                .filter(noDummiesAndOverFiveK)
                 .filter(not(e -> e instanceof Programmer)) // everyone except Programmers
                 .filter(not(e -> e.getLastName().equals("N/A"))) // filter out N/A
-                .filter(e -> e.getSalary() > 5000)
+                .filter(overFiveKSelector)
                 .filter(e -> e.getSalary() < 10000)
                 .collect(Collectors.toSet()) // Set<Employee> - terminal operation
                 .stream()// have to convert back to Stream after toSet()

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -61,12 +62,14 @@ public class StreamsStuff {
 
 //        streamsPractice(peopleText);
 
-        employeeStreamPractice(peopleText);
+//        flattenStreamsOfStreams(peopleText);
+
+        alternativesToFilter(peopleText);
 
 
     }
 
-    private static void employeeStreamPractice(String peopleText) {
+    private static void flattenStreamsOfStreams(String peopleText) {
         peopleText
                 .lines()
                 .map(Employee::createEmployee)
@@ -77,6 +80,31 @@ public class StreamsStuff {
                 .map(String::toLowerCase)
                 .distinct() // get rid of duplicate letters
                 .forEach(System.out::print);
+    }
+
+    private static void alternativesToFilter(String peopleText) {
+        Predicate<Employee> dummySelector = e -> e.getLastName().equals("N/A");
+        Optional<Employee> optionalEmployee = peopleText
+                .lines()
+                .map(Employee::createEmployee)
+                .map(e -> (Employee) e)
+                .filter(dummySelector.negate())
+                .findAny()
+//                .findFirst();
+        System.out.println(optionalEmployee // If there is an employee then get the first name out
+                .map(Employee::getFirstName)
+                .orElse("Nobody")); // otherwise return nobody
+//                .noneMatch(e -> e.getSalary() < 0);
+//                .anyMatch(e -> e.getSalary() > 10000000);
+//                .allMatch(e -> e.getSalary() > 2500);
+
+        /*
+        if (employee != null) {
+            System.out.println(employee.getFirstName());
+        } else {
+            System.out.println("Nobody");
+        }
+         */
     }
 
     private static void streamsPractice(String peopleText) {

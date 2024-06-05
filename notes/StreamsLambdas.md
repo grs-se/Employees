@@ -433,18 +433,59 @@ private static void streamPractice(String peopleText) {
 - flatMap
 - anytime you have a situation with the Streams API where you end up with a stream of streams that's probably not what you wanted in many cases and you want to flatten that structure into one stream, and that is what the flatMap does.
 ```java
-    private static void employeeStreamPractice(String peopleText) {
-        peopleText
-                .lines()
-                .map(Employee::createEmployee)
-                .map(e -> (Employee) e)
-                .map(Employee::getFirstName)
-                .map(firstName -> firstName.split(""))
-                .flatMap(Arrays::stream) // flattens redundant child streams into one super stream with whatever the original contents were emdedded
-                .map(String::toLowerCase)
-                .distinct() // get rid of duplicate letters
-                .forEach(System.out::print);
-    }
+private static void flattenStreamsOfStreams(String peopleText) {
+    peopleText
+            .lines()
+            .map(Employee::createEmployee)
+            .map(e -> (Employee) e)
+            .map(Employee::getFirstName)
+            .map(firstName -> firstName.split(""))
+            .flatMap(Arrays::stream) // flattens redundant child streams into one super stream with whatever the original contents were emdedded
+            .map(String::toLowerCase)
+            .distinct() // get rid of duplicate letters
+            .forEach(System.out::print);
+}
     // fredn/a2345bywilmt
 
 ```
+---
+### Alternatives to Filter
+- do all of the employees have a salary higher than? allMatch() returns a boolean checks every item that comes through the stream, after we have done any filtering
+- do any of the employees have a salary higher than? 
+- what's the advantage of these methods over a filter? 
+  - a situation where you really just want to know yes or know, and don't want to count up all the objects that passed throguh all the filters
+  - these methods provide short-circuiting. Drop-while, do-while, will iterate over the stream until a predicate is satisfied and then stop traveersing the stream at that point and either just return the rest of it or return everything up until that pointn, the point is they are able to short-circuit some part of the stream, and the benefit of that prevents iterating over 100000000s of records iflooking for first match
+- .nonMatch() 
+- .findFirst() returns an Optional - Optional allows us to avoid having null variables or values - if used properly can allow us to avoid null pointer exceptions
+- can't call a method on an object that isn't there - that will result in a null pointer exception - basically an error, you're program will blow up
+  - this is why the recommendation of taking the string constant and putting it at the front exists
+  - i.e. preferred: Predicate<Employee> dummyEmployeeSelector = employee -> "N/A".equals(employee.getLastName());
+  - rather than: Predicate<Employee> dummySelector = e -> e.getLastName().equals("N/A");
+  - or more modern solution is to use an Optional which allows us to say it might or might not have a value, we'll find otu at runtime. Key thing is it will alwauys be Optional, Optioal is an actual object, fields that support optionals should always at least have the Optional object existing, Optional is like a box, a box capable of housing whatever the Optional's genereic type is, Optional<Employee>
+```java
+private static void alternativesToFilter(String peopleText) {
+    Predicate<Employee> dummySelector = e -> e.getLastName().equals("N/A");
+    Optional<Employee> optionalEmployee = peopleText
+            .lines()
+            .map(Employee::createEmployee)
+            .map(e -> (Employee) e)
+            .filter(dummySelector.negate())
+            .findFirst();
+    System.out.println(optionalEmployee // If there is an employee then get the first name out
+            .map(Employee::getFirstName)
+            .orElse("Nobody")); // otherwise return nobody
+      /*
+        if (employee != null) {
+            System.out.println(employee.getFirstName());
+        } else {
+            System.out.println("Nobody");
+        }
+      */
+    
+//                .noneMatch(e -> e.getSalary() < 0);
+//                .anyMatch(e -> e.getSalary() > 10000000);
+//                .allMatch(e -> e.getSalary() > 2500);
+}
+```
+- differnece between findAny and findFirst is to do with how the Streams API handles the ordering within and how it can optimize how to float through the streams depending on whether we care about the order or not
+- More of an impact if you are using the streams API to do parallel processing where we allow multiple processors or cores within a computer to execute a pipeline concurrently or at the samet time. In that scenario, if we're using findAny it doesnt matter which one we find that satisfies the predicate even across multiple processors

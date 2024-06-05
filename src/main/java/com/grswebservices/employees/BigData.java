@@ -9,17 +9,19 @@ import java.util.stream.Stream;
 
 // WARNING: This file has 5 million records.
 public class BigData {
+    // record generates getters, setters, etc automatically
+    record Person(String firstName, String lastName, long salary, String state) {}
+
     public static void main(String[] args) throws IOException {
         try {
             long startTime = System.currentTimeMillis();
-            Long result = Files.lines(Path.of("E:\\Java\\Hr5m.csv")).parallel()
+            Long result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+                    // .parallel() // parallel processing is supposed to reduce processing time but happens to increase it on my 4 core computer
                     .skip(1) // skip header row
 //                            .limit(10) // limit lines because file has 5 million records
                     .map(s -> s.split(","))
-                    .map(arr -> arr[25]) // index 25 = salary field
-                    .mapToLong(Long::parseLong)
-                    .sum();
-//                    .collect(Collectors.summingLong(Long::parseLong));
+                    .map(a -> new Person(a[2], a[4], Long.parseLong(a[25]), a[32]))
+                    .mapToLong(Person::salary).sum();
             long endTime = System.currentTimeMillis();
             System.out.printf("$%,d.00%n", result);
             System.out.println(endTime - startTime);

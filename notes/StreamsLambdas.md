@@ -678,3 +678,11 @@ public class BigData {
 
 
 ```
+### Domain Models with Streams API
+- Streams API lends itself very well towards the data that we are processing being stored in actual objects of a domain model.
+- Difference between using a domain model to process 5million records vs using an array and other techniques.
+- be aware that essentially we've got a pipeline here and you can imagine that ther eis a for loop happenng 5 million times. 
+- when we call split an instance of an array is being created and that means 5million arrays are being created during the lifetime of this programme, and with the addition of the Person class, 5 million instance of the Person class will also be created, and if were not careful udner ertain cricumstances that could be quite eassteful of the moemory of the computer.
+- however these arrays and instances won't actualyl live very long, because in Java whenever an object i created the JVM is constnatly montoring and tracking the creation of objcets, and when it realised that an objcet is no longer being referenced, i.e. used, and doesn't have any possiblity of being used again, then the JVM will falg that object for garbage collection, nd sot here is this garbage collection thread that periodoiically comes looking around for objects that have been flagged for garbgae ollection and it will colect them and clear them out of system meory
+- main point is that in this programme we are not likely to ever see 5miilion arrays and 5million People intances all sititng in memory at the same time. Maybe 100-1000 at one time.
+- 

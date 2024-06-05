@@ -546,3 +546,33 @@ private static void reduceNonNumericValues() {
 - Map Reduce pattern can be highly effective when needing to process large amounts of data. 
 - Popular because can easily be parallelized, can process lots of data across multiple processors.
 - a large list of 1 billion items can be segmented into groupings depending on how many processors available and each processor has its own groupings and sum up whatever property and reduce down to one value on that processor and other processors do the same and then all of their values get summed up togehter as well and then you've got the grand total value - presumambly in 1/10 of the time if 10 processors.
+
+### Intro to More Advanced Streams
+- CSV - Comma Separated Values - very commonly used in business especially among programmers but lvoe to use excel to programme data, but usally they need to give that data over to developers to do more meanningful programming takss around it, and so typically they export that data in the CSV format
+- simple text file that is comma separated. 
+- different methods are capable of generating different kinds of exceptions when things dontwork out correctly
+- we can limit the number of streams that we process with .limit()
+- one of the great things abouts the Files.lines() capabality is that it is highly efficient in that certain types of file input/output programming one common pattern that wouldn't work very effectively herewould be to open up the file, read the entire contents of the file into a variable or buffer or array and then close the file.
+- The problem with that approach here is that because this file has 5 million records that would mean that we would have to load up all 5million of those records into the memory of the computer while the programming is running, and that would be very wasteful of memory, if we don't absolutely need all that data in memory all at once.
+- Fies.lines() capbility to retrn back a string is very streamlined in that it doesnt need to load the entire file into memory, instead it literally reads one line at a time and streaming those lines through for us to process and so they come in get proecssed and go back out of the memory again, and that alows us to very efficiently work with incredibly large files if we need to without impacting the memory of the computer signinfanctly at all.
+- So whether we were loading 5 or 5 million lines it wouldnt effect the memory much however it would effect the time, as we dont want to sit there and wait for it to happen.
+
+```java
+public class BigData {
+  public static void main(String[] args) throws IOException {
+    try {
+      Long result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+              .limit(2) // limit processing of lines to 2
+              .skip(1) // skip header row
+              .collect(Collectors.counting());
+//                    .count()
+//                    .collect(Collectors.toList());
+      System.out.println(result);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+}
+```
+- difference between .count() and .collect() - .collect is an entire framework to enable us to do powerful query type things with the streams api. all kinds of capabilities that have been implemented ina fairly generic type of way in an interface whereas the .count method and many of the other temrinal methods in the streams API are more purpose built, so in some cases they might actually be more effciient.
+- some things that you can only do with the .collect() method that you can;t do in any other way.

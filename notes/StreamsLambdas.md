@@ -749,3 +749,87 @@ public class BigData {
 //{CA=[Person[firstName=Damian, lastName=Patillo, salary=158746, state=CA], Person[firstName=Jesusita, lastName=Hollie, salary=103839, state=CA]], DC=[Person[firstName=Argentina, lastName=Hern, salary=129174, state=DC]], LA=[Person[firstName=Walker, lastName=Wallach, salary=197519, state=LA]], NJ=[Person[firstName=Destiny, lastName=Nicholson, salary=126048, state=NJ], Person[firstName=Evie, lastName=Hamby, salary=193757, state=NJ]], OH=[Person[firstName=Lizeth, lastName=Mccoll, salary=147446, state=OH], Person[firstName=Fausto, lastName=Esqueda, salary=60101, state=OH], Person[firstName=Vanda, lastName=Komar, salary=115639, state=OH]], TX=[Person[firstName=Imogene, lastName=Hagopian, salary=55761, state=TX]]}
 //3058
 ```
+---
+### Summing by Groups
+- sum total by state - which state makes the most money?
+- in Excel every one of the sum numeric functions exists on the Collectors class
+- when using the 3 parameter version of groupingBy() the first parameter is asking what field do you want to group by? the 2nd parameter in this case lets us specify what map do we want to use, we supply the map that we want to make use of. 3rd column is what do you want me to do with all of the resulting records for each categorization?
+
+
+```java
+public class BigData {
+    // record generates getters, setters, etc automatically
+    record Person(String firstName, String lastName, long salary, String state) {}
+
+    public static void main(String[] args) throws IOException {
+        try {
+            long startTime = System.currentTimeMillis();
+            Map<String, String> result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+                    .skip(1) // skip header row
+//                    .limit(10) // limit lines because file has 5 million records
+                    .map(s -> s.split(","))
+                    .map(a -> new Person(a[2], a[4], Long.parseLong(a[25]), a[32]))
+                    .collect(groupingBy(Person::state, TreeMap::new,
+                            collectingAndThen(summingLong(Person::salary), s -> String.format("$%,d.00%n", s))));
+//                    .collect(Collectors.groupingBy(Person::state, TreeMap::new, toList())); // convert default HashMap to TreeMap for alphabetized ordering
+//                    .collect(Collectors.groupingBy(Person::state));
+            long endTime = System.currentTimeMillis();
+//            System.out.printf("$%,d.00%n", result);
+            System.out.println(result);
+            System.out.println(endTime - startTime);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+
+//{AK=$3,858,792,792.00
+//, AL=$12,021,106,044.00
+//, AR=$10,167,623,203.00
+//, AZ=$7,520,643,811.00
+//, CA=$38,526,260,270.00
+//, CO=$9,378,153,793.00
+//, CT=$6,205,579,091.00
+
+```
+.collect().forEach take BiConsumer - two inputs = key and value - each key value pair the foreach method will call your function passing in these two values and do whatever you want
+
+```java
+public class BigData {
+    // record generates getters, setters, etc automatically
+    record Person(String firstName, String lastName, long salary, String state) {}
+
+    public static void main(String[] args) throws IOException {
+        try {
+            long startTime = System.currentTimeMillis();
+//            Map<String, String> result =
+                    Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+                    .skip(1) // skip header row
+//                    .limit(10) // limit lines because file has 5 million records
+                    .map(s -> s.split(","))
+                    .map(a -> new Person(a[2], a[4], Long.parseLong(a[25]), a[32]))
+                    .collect(groupingBy(Person::state, TreeMap::new,
+                            collectingAndThen(summingLong(Person::salary), NumberFormat.getCurrencyInstance()::format)))
+                    .forEach((state, salary) -> System.out.printf("%s -> %s%n", state, salary));
+//                          collectingAndThen(summingLong(Person::salary), s -> NumberFormat.getCurrencyInstance().format(s))));
+//                          collectingAndThen(summingLong(Person::salary), s -> String.format("$%,d.00%n", s))));
+//                    .collect(Collectors.groupingBy(Person::state, TreeMap::new, toList())); // convert default HashMap to TreeMap for alphabetized ordering
+//                    .collect(Collectors.groupingBy(Person::state));
+            long endTime = System.currentTimeMillis();
+//            System.out.printf("$%,d.00%n", result);
+//            System.out.println(result);
+            System.out.println(endTime - startTime);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+//VA -> £18,689,390,844.00
+//VT -> £4,250,722,586.00
+//WA -> £10,323,935,354.00
+//WI -> £12,811,058,437.00
+//WV -> £13,773,233,536.00
+//WY -> £2,790,845,726.00
+```
+- the most popular use for java programmes is to transfer data back and forth between various data systems, between members in an organisation or between organisations
+- or to convey data, to process data to be interacted with in the web browser in the form of a web application

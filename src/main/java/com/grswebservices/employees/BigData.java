@@ -3,6 +3,7 @@ package com.grswebservices.employees;
 import com.sun.source.tree.Tree;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.NumberFormat;
@@ -17,7 +18,7 @@ import static java.util.stream.Collectors.*;
 // WARNING: This file has 5 million records.
 public class BigData {
     // record generates getters, setters, etc automatically
-    record Person(String firstName, String lastName, long salary, String state, char gender) {}
+    record Person(String firstName, String lastName, BigDecimal salary, String state, char gender) {}
 
     public static void main(String[] args) throws IOException {
         try {
@@ -29,13 +30,14 @@ public class BigData {
                     .skip(1) // skip header row
                     .limit(100) // limit lines because file has 5 million records
                     .map(s -> s.split(","))
-                    .map(a -> new Person(a[2], a[4], Long.parseLong(a[25]), a[32], a[5].strip().charAt(0)))
+                    .map(a -> new Person(a[2], a[4], new BigDecimal(a[25]), a[32], a[5].strip().charAt(0)))
                     .collect(
                             groupingBy(Person::state, TreeMap::new,
                                     groupingBy(Person::gender,
                                             collectingAndThen(
-                                                    summingLong(Person::salary),
-//                                                    averagingLong(Person::salary),
+                                                    reducing(BigDecimal.ZERO, Person::salary, BigDecimal::add),
+//                                                    reducing(BigDecimal.ZERO, Person::salary, (a, b) -> a.add(b)),
+//                                                    summingLong(Person::salary),
                                                     NumberFormat.getCurrencyInstance()::format))
                             )
                     );

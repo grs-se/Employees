@@ -886,4 +886,9 @@ public class BigData {
 - first group by state, then do a secondary level of grouping by gender, then take all the records for that and do two things, sum them up and then format them as currency.
 - you can keep nesting groups into further levels.
 - generics cannot actually hve generic data types so Java will automatically map those primitive data types to class wrap types.
+
+---
+### Reducing with Collect
+- Scenario:
+- what if you wanted to do some other kind of operation on your data, like the salary field, an operation that doesn't come pre-packaged with the Collectors out of the box.
 - 

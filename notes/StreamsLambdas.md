@@ -685,4 +685,67 @@ public class BigData {
 - when we call split an instance of an array is being created and that means 5million arrays are being created during the lifetime of this programme, and with the addition of the Person class, 5 million instance of the Person class will also be created, and if were not careful udner ertain cricumstances that could be quite eassteful of the moemory of the computer.
 - however these arrays and instances won't actualyl live very long, because in Java whenever an object i created the JVM is constnatly montoring and tracking the creation of objcets, and when it realised that an objcet is no longer being referenced, i.e. used, and doesn't have any possiblity of being used again, then the JVM will falg that object for garbage collection, nd sot here is this garbage collection thread that periodoiically comes looking around for objects that have been flagged for garbgae ollection and it will colect them and clear them out of system meory
 - main point is that in this programme we are not likely to ever see 5miilion arrays and 5million People intances all sititng in memory at the same time. Maybe 100-1000 at one time.
-- 
+
+### Grouping Records
+- Advanced techniques on .collect() methods, one of which has the ability not only to sum up data from a column or a field but to actually be able to group data by a field, or in other words to categorize data.
+- group 2-dimensional table of records by some category or field
+- .collect() method is gateway into much more advanced capabilities like grouping data
+```java
+public class BigData {
+  // record generates getters, setters, etc automatically
+  record Person(String firstName, String lastName, long salary, String state) {}
+
+  public static void main(String[] args) throws IOException {
+    try {
+      long startTime = System.currentTimeMillis();
+      Map<String, List<Person>> result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+              .skip(1) // skip header row
+              .limit(10) // limit lines because file has 5 million records
+              .map(s -> s.split(","))
+              .map(a -> new Person(a[2], a[4], Long.parseLong(a[25]), a[32]))
+              .collect(Collectors.groupingBy(Person::state));
+      long endTime = System.currentTimeMillis();
+//            System.out.printf("$%,d.00%n", result);
+      System.out.println(result);
+      System.out.println(endTime - startTime);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+}
+// {TX=[Person[firstName=Imogene, lastName=Hagopian, salary=55761, state=TX]], LA=[Person[firstName=Walker, lastName=Wallach, salary=197519, state=LA]], OH=[Person[firstName=Lizeth, lastName=Mccoll, salary=147446, state=OH], Person[firstName=Fausto, lastName=Esqueda, salary=60101, state=OH], Person[firstName=Vanda, lastName=Komar, salary=115639, state=OH]], NJ=[Person[firstName=Destiny, lastName=Nicholson, salary=126048, state=NJ], Person[firstName=Evie, lastName=Hamby, salary=193757, state=NJ]], CA=[Person[firstName=Damian, lastName=Patillo, salary=158746, state=CA], Person[firstName=Jesusita, lastName=Hollie, salary=103839, state=CA]], DC=[Person[firstName=Argentina, lastName=Hern, salary=129174, state=DC]]}
+// 106
+
+
+```
+- {TX=[Person[firstName=Imogene = Imogene from Texas,
+- .groupingBy() - 3 overloaded versions - a mapFactory() just another lambda or method reference that allows us to return a specific instance of a map. 
+- when we're using the version of groupingBy that only takes 1 input which is basically the field that we want to group by, by default it will take all of the records that got grouped and it will throw them into a list and return them.
+
+```java
+public class BigData {
+    // record generates getters, setters, etc automatically
+    record Person(String firstName, String lastName, long salary, String state) {}
+
+    public static void main(String[] args) throws IOException {
+        try {
+            long startTime = System.currentTimeMillis();
+            Map<String, List<Person>> result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+                    .skip(1) // skip header row
+                    .limit(10) // limit lines because file has 5 million records
+                    .map(s -> s.split(","))
+                    .map(a -> new Person(a[2], a[4], Long.parseLong(a[25]), a[32]))
+                    .collect(Collectors.groupingBy(Person::state, TreeMap::new, toList())); // convert default HashMap to TreeMap for alphabetized ordering
+//                    .collect(Collectors.groupingBy(Person::state));
+            long endTime = System.currentTimeMillis();
+//            System.out.printf("$%,d.00%n", result);
+            System.out.println(result);
+            System.out.println(endTime - startTime);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+//{CA=[Person[firstName=Damian, lastName=Patillo, salary=158746, state=CA], Person[firstName=Jesusita, lastName=Hollie, salary=103839, state=CA]], DC=[Person[firstName=Argentina, lastName=Hern, salary=129174, state=DC]], LA=[Person[firstName=Walker, lastName=Wallach, salary=197519, state=LA]], NJ=[Person[firstName=Destiny, lastName=Nicholson, salary=126048, state=NJ], Person[firstName=Evie, lastName=Hamby, salary=193757, state=NJ]], OH=[Person[firstName=Lizeth, lastName=Mccoll, salary=147446, state=OH], Person[firstName=Fausto, lastName=Esqueda, salary=60101, state=OH], Person[firstName=Vanda, lastName=Komar, salary=115639, state=OH]], TX=[Person[firstName=Imogene, lastName=Hagopian, salary=55761, state=TX]]}
+//3058
+```

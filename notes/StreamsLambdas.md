@@ -833,3 +833,57 @@ public class BigData {
 ```
 - the most popular use for java programmes is to transfer data back and forth between various data systems, between members in an organisation or between organisations
 - or to convey data, to process data to be interacted with in the web browser in the form of a web application
+
+---
+### Nested Groupings
+- Problem: how much money in total do women in each state make vs men in each state?
+- 2nd level of categorization or grouping
+```java
+ public class BigData {
+  // record generates getters, setters, etc automatically
+  record Person(String firstName, String lastName, long salary, String state, char gender) {}
+
+  public static void main(String[] args) throws IOException {
+    try {
+      long startTime = System.currentTimeMillis();
+//            Map<String, String> result =
+      // Map<String(state), Map<chat(gender), String(formatted-salary)>>
+      // might be preferable to use more generic Map type rather than TreeMap
+      TreeMap<String, Map<Character, String>> result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+              .skip(1) // skip header row
+              .limit(100) // limit lines because file has 5 million records
+              .map(s -> s.split(","))
+              .map(a -> new Person(a[2], a[4], Long.parseLong(a[25]), a[32], a[5].strip().charAt(0)))
+              .collect(
+                      groupingBy(Person::state, TreeMap::new,
+                              groupingBy(Person::gender,
+                                      collectingAndThen(
+                                              summingLong(Person::salary),
+                                              NumberFormat.getCurrencyInstance()::format))
+                      )
+              );
+//                            .entrySet().stream()
+//                            .forEach();
+//                    .forEach((state, salary) -> System.out.printf("%s -> %s%n", state, salary));
+//                          collectingAndThen(summingLong(Person::salary), s -> NumberFormat.getCurrencyInstance().format(s))));
+//                          collectingAndThen(summingLong(Person::salary), s -> String.format("$%,d.00%n", s))));
+//                    .collect(Collectors.groupingBy(Person::state, TreeMap::new, toList())); // convert default HashMap to TreeMap for alphabetized ordering
+//                    .collect(Collectors.groupingBy(Person::state));
+      long endTime = System.currentTimeMillis();
+//            System.out.printf("$%,d.00%n", result);
+      System.out.println(result);
+      System.out.println(endTime - startTime);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+}
+
+// {AL={F=£258,618.00, M=£395,247.00}, AR={M=£58,910.00}, CA={F=£467,901.00, M=£510,934.00}, CO={F=£171,496.00, M=£90,660.00}, DC={F=£129,174.00}, GA={F=£214,796.00, M=£163,300.00}, IL={M=£454,970.00}, KS={F=£325,792.00, M=£119,606.00}, KY={F=£340,971.00}, LA={M=£612,031.00}, MA={M=£74,095.00}, MD={F=£144,914.00, M=£95,566.00}, ME={F=£96,736.00}, MI={F=£178,512.00, M=£358,338.00}, MN={F=£326,712.00}, NC={F=£236,730.00, M=£107,120.00}, NJ={F=£319,805.00}, NM={F=£274,535.00, M=£62,402.00}, NV={F=£150,529.00}, NY={F=£205,192.00, M=£326,947.00}, OH={F=£263,085.00, M=£290,046.00}, OK={F=£175,660.00}, PA={F=£248,366.00, M=£919,688.00}, RI={F=£149,128.00}, SC={F=£144,167.00}, SD={M=£186,834.00}, TN={M=£134,139.00}, TX={F=£560,909.00, M=£370,453.00}, VA={F=£92,436.00, M=£310,115.00}, WA={F=£178,965.00}, WI={F=£263,771.00, M=£41,892.00}, WV={F=£62,618.00, M=£87,190.00}, WY={F=£103,833.00}}
+// 74
+
+```
+- first group by state, then do a secondary level of grouping by gender, then take all the records for that and do two things, sum them up and then format them as currency.
+- you can keep nesting groups into further levels.
+- generics cannot actually hve generic data types so Java will automatically map those primitive data types to class wrap types.
+- 

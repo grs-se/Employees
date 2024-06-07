@@ -886,9 +886,149 @@ public class BigData {
 - first group by state, then do a secondary level of grouping by gender, then take all the records for that and do two things, sum them up and then format them as currency.
 - you can keep nesting groups into further levels.
 - generics cannot actually hve generic data types so Java will automatically map those primitive data types to class wrap types.
+```java
+public class BigData {
+  // record generates getters, setters, etc automatically
+  record Person(String firstName, String lastName, BigDecimal salary, String state, char gender) {}
+
+  public static void main(String[] args) throws IOException {
+    try {
+      long startTime = System.currentTimeMillis();
+//            Map<String, String> result =
+      // Map<String(state), Map<chat(gender), String(formatted-salary)>>
+      // might be preferable to use more generic Map type rather than TreeMap
+      TreeMap<String, Map<Character, String>> result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+              .skip(1) // skip header row
+              .limit(100) // limit lines because file has 5 million records
+              .map(s -> s.split(","))
+              .map(a -> new Person(a[2], a[4], new BigDecimal(a[25]), a[32], a[5].strip().charAt(0)))
+              .collect(
+                      groupingBy(Person::state, TreeMap::new,
+                              groupingBy(Person::gender,
+                                      collectingAndThen(
+                                              reducing(BigDecimal.ZERO, Person::salary, BigDecimal::add),
+//                                                    reducing(BigDecimal.ZERO, Person::salary, (a, b) -> a.add(b)),
+//                                                    summingLong(Person::salary),
+                                              NumberFormat.getCurrencyInstance()::format))
+                      )
+              );
+//                            .entrySet().stream()
+//                            .forEach();
+//                    .forEach((state, salary) -> System.out.printf("%s -> %s%n", state, salary));
+//                          collectingAndThen(summingLong(Person::salary), s -> NumberFormat.getCurrencyInstance().format(s))));
+//                          collectingAndThen(summingLong(Person::salary), s -> String.format("$%,d.00%n", s))));
+//                    .collect(Collectors.groupingBy(Person::state, TreeMap::new, toList())); // convert default HashMap to TreeMap for alphabetized ordering
+//                    .collect(Collectors.groupingBy(Person::state));
+      long endTime = System.currentTimeMillis();
+//            System.out.printf("$%,d.00%n", result);
+      System.out.println(result);
+      System.out.println(endTime - startTime);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+} 
+```
 
 ---
 ### Reducing with Collect
 - Scenario:
 - what if you wanted to do some other kind of operation on your data, like the salary field, an operation that doesn't come pre-packaged with the Collectors out of the box.
+
+---
+### Partitioning vs Grouping
+- partitionBy - a hybrid of the filter function of the streams api and the groupingBy
+- partitionBy takes a predicate (predicate an interface that takes an input and returns a boolean)
+- One of the difference between filter and partitionBy is that filter simpyl returns a modified stream that does not contain whatever items did not pas the filter, but with the partitionBy just like a groupingBy actually returns a map, and that map will alwyas have no more than two groupings - the items that did match the predicate and then the items that didn't match the predicate.
 - 
+
+```java
+public class BigData {
+    // record generates getters, setters, etc automatically
+    record Person(String firstName, String lastName, BigDecimal salary, String state, char gender) {}
+
+    public static void main(String[] args) throws IOException {
+        try {
+            long startTime = System.currentTimeMillis();
+//            Map<String, String> result =
+            // Map<String(state), Map<chat(gender), String(formatted-salary)>>
+            // might be preferable to use more generic Map type rather than TreeMap
+            Map<Boolean, List<Person>> result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+                    .skip(1) // skip header row
+                    .limit(100) // limit lines because file has 5 million records
+                    .map(s -> s.split(","))
+                    .map(a -> new Person(a[2], a[4], new BigDecimal(a[25]), a[32], a[5].strip().charAt(0)))
+                    .collect(partitioningBy(p -> p.gender()== 'F'));
+            long endTime = System.currentTimeMillis();
+            System.out.println(result);
+            System.out.println(endTime - startTime);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+// {false=[Person[firstName=Damian, lastName=Patillo, salary=158746, state=CA, gender=M], Person[firstName=Walker, lastName=Wallach, salary=197519, state=LA, gender=M], Person[firstName=Fausto, lastName=Esqueda, salary=60101, state=OH, gender=M], Person[firstName=Carlton, lastName=Friedrich, salary=43826, state=OH, gender=M], Person[firstName=Carmelo, lastName=Haynie, salary=84036, state=MI, gender=M], Person[firstName=Burton, lastName=Lowry, salary=181592, state=PA, gender=M], Person[firstName=Mickey, lastName=Bassham, salary=131922, state=MI, gender=M], Person[firstName=Ruben, lastName=Pastor, salary=41892, state=WI, gender=M], Person[firstName=Donnell, lastName=Wolff, salary=190587, state=AL, gender=M], Person[firstName=Guadalupe, lastName=Ketron, salary=122513, state=PA, gender=M], Person[firstName=Trenton, lastName=Roessler, salary=80435, state=MI, gender=M], Person[firstName=Fernando, lastName=Merced, salary=95566, state=MD, gender=M], Person[firstName=Jordan, lastName=Raine, salary=199796, state=NY, gender=M], Person[firstName=Phillip, lastName=Bostic, salary=90660, state=CO, gender=M], Person[firstName=Nestor, lastName=Gledhill, salary=52538, state=NC, gender=M], Person[firstName=Edgar, lastName=Phares, salary=125113, state=PA, gender=M], Person[firstName=Valentine, lastName=Fuentez, salary=159076, state=TX, gender=M], Person[firstName=Wesley, lastName=Downes, salary=52780, state=TN, gender=M], Person[firstName=Isidro, lastName=Estepp, salary=61945, state=MI, gender=M], Person[firstName=Chuck, lastName=Mcafee, salary=108741, state=TX, gender=M], Person[firstName=Jacques, lastName=Chick, salary=190846, state=PA, gender=M], Person[firstName=Florencio, lastName=Varnell, salary=67060, state=LA, gender=M], Person[firstName=Delmer, lastName=Tillman, salary=100827, state=IL, gender=M], Person[firstName=Carrol, lastName=Tinker, salary=122292, state=PA, gender=M], Person[firstName=Shayne, lastName=Shaffer, salary=119606, state=KS, gender=M], Person[firstName=Don, lastName=Thorne, salary=92536, state=OH, gender=M], Person[firstName=Thaddeus, lastName=Noggle, salary=163300, state=GA, gender=M], Person[firstName=Houston, lastName=Langston, salary=103402, state=CA, gender=M], Person[firstName=Lucius, lastName=Dengler, salary=158901, state=IL, gender=M], Person[firstName=Gustavo, lastName=Yedinak, salary=129474, state=AL, gender=M], Person[firstName=Rashad, lastName=Tipton, salary=195242, state=IL, gender=M], Person[firstName=Milford, lastName=Stegman, salary=58910, state=AR, gender=M], Person[firstName=Louis, lastName=Ison, salary=150160, state=LA, gender=M], Person[firstName=Wilber, lastName=Rodrigez, salary=185031, state=VA, gender=M], Person[firstName=Nick, lastName=Rosado, salary=127151, state=NY, gender=M], Person[firstName=Rich, lastName=Mei, salary=80739, state=CA, gender=M], Person[firstName=Joan, lastName=Mcauley, salary=197292, state=LA, gender=M], Person[firstName=Trenton, lastName=Lilly, salary=54582, state=NC, gender=M], Person[firstName=Jon, lastName=Mullinax, salary=125084, state=VA, gender=M], Person[firstName=Russell, lastName=Rawls, salary=93583, state=OH, gender=M], Person[firstName=Marion, lastName=Fermin, salary=73543, state=SD, gender=M], Person[firstName=Luigi, lastName=Corbett, salary=75186, state=AL, gender=M], Person[firstName=Woodrow, lastName=Tellis, salary=74095, state=MA, gender=M], Person[firstName=Scottie, lastName=Netto, salary=81359, state=TN, gender=M], Person[firstName=Austin, lastName=Vandeventer, salary=168047, state=CA, gender=M], Person[firstName=Rueben, lastName=Curren, salary=62402, state=NM, gender=M], Person[firstName=Trevor, lastName=Stidham, salary=102636, state=TX, gender=M], Person[firstName=Cedric, lastName=Cunningham, salary=113291, state=SD, gender=M], Person[firstName=Wyatt, lastName=Stacey, salary=177332, state=PA, gender=M], Person[firstName=Roberto, lastName=Klapper, salary=87190, state=WV, gender=M]], 
+// true=[Person[firstName=Lizeth, lastName=Mccoll, salary=147446, state=OH, gender=F], Person[firstName=Argentina, lastName=Hern, salary=129174, state=DC, gender=F], Person[firstName=Imogene, lastName=Hagopian, salary=55761, state=TX, gender=F], Person[firstName=Jesusita, lastName=Hollie, salary=103839, state=CA, gender=F], Person[firstName=Vanda, lastName=Komar, salary=115639, state=OH, gender=F], Person[firstName=Destiny, lastName=Nicholson, salary=126048, state=NJ, gender=F], Person[firstName=Evie, lastName=Hamby, salary=193757, state=NJ, gender=F], Person[firstName=Bari, lastName=Troche, salary=182148, state=NM, gender=F], Person[firstName=Ying, lastName=Cerrone, salary=184946, state=MN, gender=F], Person[firstName=Bette, lastName=Copas, salary=103833, state=WY, gender=F], Person[firstName=Tien, lastName=Harkey, salary=103292, state=CA, gender=F], Person[firstName=Loma, lastName=Chesney, salary=66545, state=AL, gender=F], Person[firstName=Evelyn, lastName=Mclellan, salary=150529, state=NV, gender=F], Person[firstName=Meghann, lastName=Burtch, salary=53485, state=KS, gender=F], Person[firstName=Vivienne, lastName=Weikel, salary=178679, state=PA, gender=F], Person[firstName=Keely, lastName=Engleman, salary=142778, state=KY, gender=F], Person[firstName=Elida, lastName=Popa, salary=76017, state=OK, gender=F], Person[firstName=Muriel, lastName=Kasper, salary=69687, state=PA, gender=F], Person[firstName=Miriam, lastName=Rolfe, salary=178512, state=MI, gender=F], Person[firstName=Livia, lastName=Barefield, salary=178965, state=WA, gender=F], Person[firstName=Renea, lastName=Talavera, salary=144167, state=SC, gender=F], Person[firstName=Shelley, lastName=Matthes, salary=62618, state=WV, gender=F], Person[firstName=Suzy, lastName=Burge, salary=92436, state=VA, gender=F], Person[firstName=Valerie, lastName=Burge, salary=161154, state=WI, gender=F], Person[firstName=Fae, lastName=Jeppesen, salary=149128, state=RI, gender=F], Person[firstName=Octavia, lastName=Poitra, salary=123209, state=NC, gender=F], Person[firstName=Nelia, lastName=Saul, salary=199394, state=KS, gender=F], Person[firstName=Na, lastName=Minnick, salary=125558, state=TX, gender=F], Person[firstName=Breann, lastName=Alonso, salary=72913, state=KS, gender=F], Person[firstName=Jimmie, lastName=Pillar, salary=44786, state=AL, gender=F], Person[firstName=Shandi, lastName=Perrigo, salary=92387, state=NM, gender=F], Person[firstName=Theresia, lastName=Guerrette, salary=156772, state=NY, gender=F], Person[firstName=Claire, lastName=Deaton, salary=140064, state=GA, gender=F], Person[firstName=Ina, lastName=Becerra, salary=93382, state=TX, gender=F], Person[firstName=Ula, lastName=Quintero, salary=99643, state=OK, gender=F], Person[firstName=Joellen, lastName=Briceno, salary=171496, state=CO, gender=F], Person[firstName=Breana, lastName=Loughran, salary=102617, state=WI, gender=F], Person[firstName=Thomasine, lastName=Bode, salary=102809, state=CA, gender=F], Person[firstName=Doria, lastName=Bone, salary=141766, state=MN, gender=F], Person[firstName=Elenor, lastName=Mcarthur, salary=107412, state=KY, gender=F], Person[firstName=Kiersten, lastName=Losey, salary=147287, state=AL, gender=F], Person[firstName=Annika, lastName=Coolidge, salary=199546, state=TX, gender=F], Person[firstName=Sueann, lastName=Rawley, salary=86662, state=TX, gender=F], Person[firstName=Ilana, lastName=Hodgdon, salary=144914, state=MD, gender=F], Person[firstName=Tamra, lastName=Pauls, salary=48420, state=NY, gender=F], Person[firstName=Marylynn, lastName=Terrell, salary=96736, state=ME, gender=F], Person[firstName=Jaimie, lastName=Flack, salary=157961, state=CA, gender=F], Person[firstName=Mariella, lastName=Baade, salary=74732, state=GA, gender=F], Person[firstName=Tawanna, lastName=Milo, salary=90781, state=KY, gender=F], Person[firstName=Janyce, lastName=Babich, salary=113521, state=NC, gender=F]]}
+// 2940
+```
+- if we don't want the list of people but instead we want to reduce them down to different values like count.
+
+```java
+public class BigData {
+    // record generates getters, setters, etc automatically
+    record Person(String firstName, String lastName, BigDecimal salary, String state, char gender) {}
+
+    public static void main(String[] args) throws IOException {
+        try {
+            long startTime = System.currentTimeMillis();
+            Map<Boolean, Long> result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+                    .skip(1) // skip header row
+                    .limit(100) // limit lines because file has 5 million records
+                    .map(s -> s.split(","))
+                    .map(a -> new Person(a[2], a[4], new BigDecimal(a[25]), a[32], a[5].strip().charAt(0)))
+                    .collect(partitioningBy(p -> p.gender()== 'F', counting())); // very simple to count
+
+            long endTime = System.currentTimeMillis();
+            System.out.println(result);
+            System.out.println(endTime - startTime);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+// {false=50, true=50}
+```
+- we can use partitioning and grouping together, any collector function can be utilized in this 2nd spot.
+- can nest layers of grouping and can do the same with partitioning too
+- scenario: groupingBy People, by state and then by gender
+
+```java
+public class BigData {
+    // record generates getters, setters, etc automatically
+    record Person(String firstName, String lastName, BigDecimal salary, String state, char gender) {}
+
+    public static void main(String[] args) throws IOException {
+        try {
+            long startTime = System.currentTimeMillis();
+//            Map<String, String> result =
+            // Map<String(state), Map<chat(gender), String(formatted-salary)>>
+            // might be preferable to use more generic Map type rather than TreeMap
+            Map<Boolean, Map<String, Long>> result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+                    .skip(1) // skip header row
+                    .limit(100) // limit lines because file has 5 million records
+                    .map(s -> s.split(","))
+                    .map(a -> new Person(a[2], a[4], new BigDecimal(a[25]), a[32], a[5].strip().charAt(0)))
+                    .collect(partitioningBy(p -> p.gender()== 'F',
+                            groupingBy(Person::state, counting())));
+            long endTime = System.currentTimeMillis();
+//            System.out.printf("$%,d.00%n", result);
+            System.out.println(result);
+            System.out.println(endTime - startTime);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+// {false={IL=3, TX=3, KS=1, VA=2, NY=2, AL=3, CO=1, SD=2, AR=1, PA=6, WI=1, MA=1, NC=2, LA=4, MD=1, OH=4, GA=1, TN=2, MI=4, CA=4, WV=1, NM=1}, true={TX=5, NV=1, WA=1, NY=2, SC=1, WI=2, MD=1, ME=1, OH=2, GA=2, MI=1, OK=2, CA=4, WV=1, MN=2, WY=1, KS=3, VA=1, AL=3, CO=1, KY=3, PA=2, NC=2, RI=1, NJ=2, NM=2, DC=1}}
+
+```

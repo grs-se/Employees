@@ -26,21 +26,24 @@ public class BigData {
 //            Map<String, String> result =
             // Map<String(state), Map<chat(gender), String(formatted-salary)>>
             // might be preferable to use more generic Map type rather than TreeMap
-            TreeMap<String, Map<Character, String>> result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+            Map<Boolean, Map<String, Long>> result = Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
                     .skip(1) // skip header row
                     .limit(100) // limit lines because file has 5 million records
                     .map(s -> s.split(","))
                     .map(a -> new Person(a[2], a[4], new BigDecimal(a[25]), a[32], a[5].strip().charAt(0)))
-                    .collect(
-                            groupingBy(Person::state, TreeMap::new,
-                                    groupingBy(Person::gender,
-                                            collectingAndThen(
-                                                    reducing(BigDecimal.ZERO, Person::salary, BigDecimal::add),
-//                                                    reducing(BigDecimal.ZERO, Person::salary, (a, b) -> a.add(b)),
-//                                                    summingLong(Person::salary),
-                                                    NumberFormat.getCurrencyInstance()::format))
-                            )
-                    );
+                    .collect(partitioningBy(p -> p.gender()== 'F',
+                            groupingBy(Person::state, counting())));
+//                    .collect(partitioningBy(p -> p.gender()== 'F', counting()));
+//                    .collect(
+//                            groupingBy(Person::state, TreeMap::new,
+//                                    groupingBy(Person::gender,
+//                                            collectingAndThen(
+//                                                    reducing(BigDecimal.ZERO, Person::salary, BigDecimal::add),
+////                                                    reducing(BigDecimal.ZERO, Person::salary, (a, b) -> a.add(b)),
+////                                                    summingLong(Person::salary),
+//                                                    NumberFormat.getCurrencyInstance()::format))
+//                            )
+//                    );
 //                            .entrySet().stream()
 //                            .forEach();
 //                    .forEach((state, salary) -> System.out.printf("%s -> %s%n", state, salary));

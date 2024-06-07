@@ -1032,3 +1032,18 @@ public class BigData {
 // {false={IL=3, TX=3, KS=1, VA=2, NY=2, AL=3, CO=1, SD=2, AR=1, PA=6, WI=1, MA=1, NC=2, LA=4, MD=1, OH=4, GA=1, TN=2, MI=4, CA=4, WV=1, NM=1}, true={TX=5, NV=1, WA=1, NY=2, SC=1, WI=2, MD=1, ME=1, OH=2, GA=2, MI=1, OK=2, CA=4, WV=1, MN=2, WY=1, KS=3, VA=1, AL=3, CO=1, KY=3, PA=2, NC=2, RI=1, NJ=2, NM=2, DC=1}}
 
 ```
+### Functional Interfaces
+- In a lot of the streams api methods they take inputs that are referring to various interfaces like Predicates and Consumers. 
+- a function in general is an interface for a method that takes an input and returns an output, usually and typically an input of one type and an output of potentially a different type though could be the same data type as well
+- Suppliers: a function that doesn't take any input but returns an output, it's often used as something like a generator, giving you an opportunity to supply a fresh something to use, in this instance it gives the opportunity to suplly our own instance of a Map, a map factory
+- BiConsumer: consumers are functions that take input but don't return anything, and the word Bi here means 2, so this returns 2 inputs and doesn't return anything.
+- BiFunction: takes 2 inputs and return 1 output, inputs can be of 2 different types, and the output can be of a 3rd type, though they can all be the same
+- BinaryOperator: very similar to a function, still takes an input and returns an output of the same type as the operands
+- BiPredicate: we use a predicate for filtering for example. Predicates are functions that take an input and return a boolean, so they are used in filters for example to determine whether the items should be allowed to keep going through the stream for example
+- Consumer: takes 1 input and returns nothing - forEach() method where we are usually taking input from items in the stream and calling sout which doesn't return anything, just prints to the screen, so that would be a consumer.
+- DoubleBinaryOperator: takes 2 inputs of type double and then presumably it will return a double
+- DoubleConsumer: somethign that returns nothing but takes 1 double
+- DoubleFunction: a function that takes something of type double as an input and returns something of another type though it could be a double.
+- DoublePredicate: input of a double and then returns true of false
+- DoubleSupplier: takes no input but returns a double
+- 

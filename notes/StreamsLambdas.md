@@ -1046,4 +1046,54 @@ public class BigData {
 - DoubleFunction: a function that takes something of type double as an input and returns something of another type though it could be a double.
 - DoublePredicate: input of a double and then returns true of false
 - DoubleSupplier: takes no input but returns a double
-- 
+
+---
+### Functional Methods of Collections
+- Looking at methods on the Collections classes or itnerfaces that pertain to doing streams and lambda expressions.
+- result.forEach()
+- result.replaceAll() - takes a BiFunction - takes 2 
+- the replaceAll method takes as an input the BiFunction, BiFunction is an interface, so when we supply a lambda expression or a method reference what's really happening is that Java is going to take our lambda and plug it into an object that it's going to create for us and that objcet will look like whatever the functional interface is that is being expected, so for replaceAll it is going ot create an object that looks like a biFunction object and then it's going to take our lamdba expresion and plug that in as a method of that BiFunction object, and then in order to actuall call our supplied lambda expression it will be mapped to the .apply() method, and genreally speaking all of these functional interfaces have an apply method, so that's why we see here function.apply(), which we can take to mean call the lambda expression or method reference that we're supplying.
+- replaceAll() - 
+
+```java
+result.replaceAll((k,v) -> k.startsWith("Z") ? v * 2 : v);
+
+@Contract(mutates = "this")
+public void replaceAll(     java. util. function. BiFunction<? super K, ? super V, ? extends V> function )
+  
+for (Map. Entry<K, V> entry : map. entrySet())     entry. setValue(function. apply(entry. getKey(), entry. getValue()))
+```
+- .compute() - Attempts to compute a mapping for the specified key and its current mapped value (or null if there is no current mapping). For example, to either create or append a String msg to a value mapping:
+- .compute() mehtod can be used for more than just tallying up values and summing up, you can use it maybe if the values we are tracking were words we might want to append something to the words
+
+```java
+public class StateCounter {
+  public static void main(String[] args) throws IOException {
+    Map<String, Long> stateCounts = new HashMap<>();
+    Files.lines(Path.of("E:\\Java\\Hr5m.csv"))
+            .skip(1)
+            .limit(100)
+            .map(l -> l.split(","))
+            // equivalent
+            .forEach(a -> stateCounts.compute(a[32], (k, v) -> v == null ? 1L : v + 1));
+    System.out.println(stateCounts);
+
+    // classic scenario for using compute method:
+    Long curPopulation = stateCounts.get("CA");
+    if (curPopulation == null) {
+      stateCounts.put("CA", 1L);
+    } else {
+      stateCounts.put("CA", ++curPopulation);
+    }
+  }
+}
+
+
+V oldValue = map. get(key); 
+V newValue = remappingFunction.apply(key, oldValue); 
+if (newValue != null) {     
+    map.put(key, newValue); 
+} else if (oldValue != null || map.containsKey(key)) {     
+    map.remove(key); 
+} return newValue;
+```

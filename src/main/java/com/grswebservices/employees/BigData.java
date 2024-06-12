@@ -53,6 +53,9 @@ public class BigData {
 //                    .collect(Collectors.groupingBy(Person::state));
             long endTime = System.currentTimeMillis();
 //            System.out.printf("$%,d.00%n", result);
+//            result.forEach();
+//            result.replaceAll((k,v) -> k.startsWith("Z") ? v * 2 : v);
+//            result.compute();
             System.out.println(result);
             System.out.println(endTime - startTime);
         } catch (IOException e) {

@@ -104,3 +104,56 @@ public class ExceptionTests {
 - the most recently called method can come first so it seems backwards, 
 - typically with a stack trace, the line of the code where the exception occured will be at the top, and that makes sense because that's where you want to start, that's where the problem begins
 - runtime errors don't actually have to be caught - java doesn't force a try catch, the ide or java don't know these calls could result in an exception before runtime.
+
+---
+### Checked Exception
+- we have to do something with it
+- can use try catch or add exception to method signature
+```java
+    public static void main(String[] args) {
+        try {
+            Files.lines(Path.of("blahblahblah")).parallel()
+                    .limit();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+    // be careful with this:
+        public static void main(String[] args) throws IOException {
+            Files.lines(Path.of("blahblahblah")).parallel()
+                    .limit();
+        }
+
+```
+- method takes particular exception if it is thrown and rethrows it back to whoever called it, so whatever code calls the main method it will have to hadle this exception now.
+- passing the buck on, which in this case is the jvm itself so the jvm will blow up all the same
+- most well written programmes wont just die, instead the user will be sent a message, and then the user can try aqain
+- with stack trace go down until you encounter code that you wrote as digging into java standard library code just cimplicates things as you cant change any of that.
+
+---
+
+- sometimes you may need to clean up or finish up some things befoe the programme compeltely dies
+- in some examples where we have been opening files up to read then we dont want to leave those files in a strange state, we want to ensure that even if something went wrong when we were reading data from somewhere, we still close that connection or file gracefully and we can do that in a finally block
+- finally block is strongly attempted to be executed by JVM regardless of what went wrong in try block. 
+- however, avoid trying to do things in finally block that can throw exceptions because that can screw up what happens in finally block, though there are some cases when you may want to tdo that.
+- hurry up get everything out of your house because its on fire.
+- no matter how bad things are going we get one last shot to try some final clear up.
+
+```java
+ public static void main(String[] args) {
+        try {
+            Files.lines(Path.of("blahblahblah"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("We were unable to open the file.");
+        } finally {
+            System.out.println("Make sure this runs no matter what...");
+        }
+    }
+```
+- try with resources
+- can create own Exception classes - not that hard - just extend from Exception class - or RuntimeException
+- when declaring methods you can declare that they will throw certain exceptions
+- get familiar with java standard library of exceptions
+- Exceptions are just information, not meant to do any processing, just data holders to hold on to pertinant information that might be helpful for someone to analuyze the programme to figure out what went wrong.
